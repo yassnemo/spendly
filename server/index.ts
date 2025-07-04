@@ -60,10 +60,16 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Serve the app on localhost:3000 for development
-  const port = 3000;
-  const host = "localhost";
-  server.listen(port, host, () => {
-    log(`🚀 Server running at http://${host}:${port}/`);
-  });
+  // For Vercel, we need to export the app for serverless functions
+  if (process.env.VERCEL) {
+    // In Vercel, we export the app and let Vercel handle the server
+    module.exports = app;
+  } else {
+    // For local development, start the server normally
+    const port = parseInt(process.env.PORT || "3000", 10);
+    const host = process.env.NODE_ENV === "development" ? "localhost" : "0.0.0.0";
+    server.listen(port, host as any, () => {
+      log(`🚀 Server running at http://${host}:${port}/`);
+    });
+  }
 })();
