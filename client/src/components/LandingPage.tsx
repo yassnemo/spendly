@@ -3,57 +3,112 @@ import { motion } from "framer-motion";
 import { GlassCard } from "@/components/ui/glass-card";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import { AnimatedCounter } from "@/components/ui/animated-counter";
+import { TextHoverEffect } from "@/components/ui/text-hover-effect";
+import { 
+  Navbar, 
+  NavBody, 
+  NavItems, 
+  MobileNav, 
+  MobileNavHeader, 
+  MobileNavMenu, 
+  MobileNavToggle, 
+  NavbarLogo, 
+  NavbarButton 
+} from "@/components/ui/resizable-navbar";
 import { AuthModal } from "@/components/AuthModal";
-import { Upload, BarChart3, DollarSign, CheckCircle, Star } from "lucide-react";
+import { Upload, BarChart3, DollarSign, CheckCircle, Star, Home, Info, CreditCard } from "lucide-react";
 
 export const LandingPage = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const openAuthModal = (mode: "signin" | "signup") => {
     setAuthMode(mode);
     setAuthModalOpen(true);
   };
 
+  const navItems = [
+    { name: "Home", link: "#home" },
+    { name: "Features", link: "#features" },
+    { name: "Pricing", link: "#pricing" },
+    { name: "About", link: "#about" }
+  ];
+
   return (
     <div className="min-h-screen bg-deep-space text-white">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/5 backdrop-blur-md border-b border-white/10">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-r from-coral to-teal rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">F</span>
-              </div>
-              <span className="text-xl font-semibold">Spendly</span>
-            </div>
-            
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-300 hover:text-white transition-colors">Features</a>
-              <a href="#pricing" className="text-gray-300 hover:text-white transition-colors">Pricing</a>
-              <a href="#about" className="text-gray-300 hover:text-white transition-colors">About</a>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <button 
-                onClick={() => openAuthModal("signin")}
-                className="text-gray-300 hover:text-white transition-colors"
+      <Navbar>
+        <NavBody>
+          <NavbarLogo />
+          <NavItems items={navItems} />
+          <div className="flex items-center space-x-4">
+            <NavbarButton 
+              as="button" 
+              variant="secondary"
+              onClick={() => openAuthModal("signin")}
+            >
+              Sign In
+            </NavbarButton>
+            <NavbarButton 
+              as="button"
+              onClick={() => openAuthModal("signup")}
+            >
+              Get Started
+            </NavbarButton>
+          </div>
+        </NavBody>
+        <MobileNav>
+          <MobileNavHeader>
+            <NavbarLogo />
+            <MobileNavToggle 
+              isOpen={isMobileMenuOpen} 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+            />
+          </MobileNavHeader>
+          <MobileNavMenu 
+            isOpen={isMobileMenuOpen} 
+            onClose={() => setIsMobileMenuOpen(false)}
+          >
+            {navItems.map((item, idx) => (
+              <a
+                key={idx}
+                href={item.link}
+                className="w-full px-4 py-2 text-gray-300 hover:text-white transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {item.name}
+              </a>
+            ))}
+            <div className="flex flex-col space-y-2 w-full pt-4 border-t border-white/20">
+              <NavbarButton 
+                as="button" 
+                variant="secondary"
+                onClick={() => {
+                  openAuthModal("signin");
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full"
               >
                 Sign In
-              </button>
-              <MagneticButton 
-                onClick={() => openAuthModal("signup")}
-                className="px-6 py-2 rounded-full"
+              </NavbarButton>
+              <NavbarButton 
+                as="button"
+                onClick={() => {
+                  openAuthModal("signup");
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full"
               >
                 Get Started
-              </MagneticButton>
+              </NavbarButton>
             </div>
-          </div>
-        </div>
-      </nav>
+          </MobileNavMenu>
+        </MobileNav>
+      </Navbar>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
+      <section id="home" className="pt-32 pb-20 px-6">
         <div className="container mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div 
@@ -76,6 +131,15 @@ export const LandingPage = () => {
                   Upload your bank statements and let our AI categorize your expenses, 
                   track your budgets, and help you save more money.
                 </p>
+                
+                {/* Test Text Hover Effect */}
+                <div className="py-4">
+                  <div className="text-2xl font-semibold text-gray-500">
+                    <TextHoverEffect 
+                      text="TRACK • SAVE • GROW" 
+                    />
+                  </div>
+                </div>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
@@ -270,6 +334,29 @@ export const LandingPage = () => {
                 <p className="text-sm text-gray-400">- Sarah M., Verified User</p>
               </div>
             </GlassCard>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Text Hover Effect Section */}
+      <section className="py-20 px-6">
+        <div className="container mx-auto">
+          <motion.div 
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-lg text-gray-400 mb-4">Hover over the text below to see the magic ✨</p>
+            <div className="h-32 flex items-center justify-center">
+              <div className="w-full max-w-2xl">
+                <TextHoverEffect 
+                  text="SAVE MONEY" 
+                  duration={0.3}
+                />
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
