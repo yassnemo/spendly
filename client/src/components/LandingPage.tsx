@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useMemo, memo } from "react";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/ui/glass-card";
 import { MagneticButton } from "@/components/ui/magnetic-button";
@@ -16,24 +16,56 @@ import {
   NavbarButton 
 } from "@/components/ui/resizable-navbar";
 import { AuthModal } from "@/components/AuthModal";
-import { Upload, BarChart3, DollarSign, CheckCircle, Star, Home, Info, CreditCard } from "lucide-react";
+import { Upload, BarChart3, DollarSign, CheckCircle, Star, Home, Info, CreditCard, TrendingUp, TrendingDown, Plus, Minus } from "lucide-react";
 
 export const LandingPage = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // Interactive Dashboard State with useCallback for performance
+  const [totalBalance, setTotalBalance] = useState(12847);
+  const [monthlyBudget] = useState(3200); // Made constant since it doesn't change
+  const [currentSpending] = useState(2176); // Made constant since it doesn't change
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const openAuthModal = (mode: "signin" | "signup") => {
+  // Memoized calculations to prevent unnecessary re-renders
+  const spendingPercentage = useMemo(() => (currentSpending / monthlyBudget) * 100, [currentSpending, monthlyBudget]);
+  
+  // Memoized spending categories to prevent recreation on every render
+  const spendingCategories = useMemo(() => [
+    { name: "Food & Dining", amount: 640, color: "from-red-500 to-red-600", icon: "🍕" },
+    { name: "Transportation", amount: 420, color: "from-blue-500 to-blue-600", icon: "🚗" },
+    { name: "Shopping", amount: 380, color: "from-purple-500 to-purple-600", icon: "🛍️" },
+    { name: "Entertainment", amount: 290, color: "from-green-500 to-green-600", icon: "🎬" },
+    { name: "Bills & Utilities", amount: 446, color: "from-yellow-500 to-yellow-600", icon: "💡" },
+  ], []);
+
+  // Optimized event handlers with useCallback
+  const openAuthModal = useCallback((mode: "signin" | "signup") => {
     setAuthMode(mode);
     setAuthModalOpen(true);
-  };
+  }, []);
 
-  const navItems = [
+  const addToBalance = useCallback(() => {
+    setTotalBalance(prev => prev + 500);
+  }, []);
+
+  const subtractFromBalance = useCallback(() => {
+    setTotalBalance(prev => Math.max(0, prev - 200));
+  }, []);
+
+  const handleCategoryClick = useCallback((categoryName: string) => {
+    setSelectedCategory(prev => prev === categoryName ? null : categoryName);
+  }, []);
+
+  // Memoized nav items
+  const navItems = useMemo(() => [
     { name: "Home", link: "#home" },
     { name: "Features", link: "#features" },
     { name: "Pricing", link: "#pricing" },
     { name: "About", link: "#about" }
-  ];
+  ], []);
 
   return (
     <div className="min-h-screen bg-deep-space text-white">
@@ -179,51 +211,96 @@ export const LandingPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 6, repeat: Infinity }}
-              >
-                <GlassCard className="p-6 shadow-2xl">
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-xl font-semibold">Dashboard Preview</h3>
-                      <div className="flex space-x-2">
-                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      </div>
+              {/* Compact Dashboard Preview */}
+              <GlassCard className="p-4 shadow-2xl max-w-md mx-auto">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold">Dashboard</h3>
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <GlassCard className="p-4" hover={false}>
-                        <div className="text-sm text-gray-400">Total Balance</div>
-                        <div className="text-2xl font-bold text-mint">
-                          <AnimatedCounter value={12847} prefix="$" />
-                        </div>
-                      </GlassCard>
-                      <GlassCard className="p-4" hover={false}>
-                        <div className="text-sm text-gray-400">Monthly Budget</div>
-                        <div className="text-2xl font-bold text-coral">
-                          <AnimatedCounter value={3200} prefix="$" />
-                        </div>
-                      </GlassCard>
-                    </div>
-                    
-                    <GlassCard className="p-4" hover={false}>
-                      <div className="text-sm text-gray-400 mb-2">Spending This Month</div>
-                      <div className="w-full bg-gray-700 rounded-full h-2">
-                        <motion.div 
-                          className="bg-gradient-to-r from-coral to-teal h-2 rounded-full"
-                          initial={{ width: 0 }}
-                          animate={{ width: "68%" }}
-                          transition={{ duration: 2, delay: 1 }}
-                        />
-                      </div>
-                      <div className="text-xs text-gray-400 mt-1">$2,176 of $3,200</div>
-                    </GlassCard>
                   </div>
-                </GlassCard>
-              </motion.div>
+                  
+                  {/* Compact Balance Overview */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center">
+                      <div className="text-xs text-gray-400">Balance</div>
+                      <div className="text-xl font-bold text-mint flex items-center justify-center gap-1">
+                        <AnimatedCounter value={totalBalance} prefix="$" />
+                        <div className="flex">
+                          <button 
+                            onClick={addToBalance}
+                            className="p-0.5 rounded bg-green-500/10 hover:bg-green-500/20"
+                          >
+                            <Plus className="w-2.5 h-2.5 text-green-500" />
+                          </button>
+                          <button 
+                            onClick={subtractFromBalance}
+                            className="p-0.5 rounded bg-red-500/10 hover:bg-red-500/20 ml-1"
+                          >
+                            <Minus className="w-2.5 h-2.5 text-red-500" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className="text-xs text-gray-400">Budget</div>
+                      <div className="text-xl font-bold text-coral">
+                        <AnimatedCounter value={monthlyBudget} prefix="$" />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Compact Progress */}
+                  <div>
+                    <div className="flex justify-between text-xs text-gray-400 mb-1">
+                      <span>Spent: ${currentSpending.toLocaleString()}</span>
+                      <span>{Math.round(spendingPercentage)}%</span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-2">
+                      <motion.div 
+                        className="bg-gradient-to-r from-coral to-teal h-2 rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${spendingPercentage}%` }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Top 3 Categories Only */}
+                  <div>
+                    <div className="text-xs text-gray-400 mb-2">Top Categories</div>
+                    <div className="space-y-2">
+                      {spendingCategories.slice(0, 3).map((category, idx) => (
+                        <div
+                          key={category.name}
+                          className="flex items-center justify-between py-1 px-2 rounded hover:bg-white/5 cursor-pointer transition-colors"
+                          onClick={() => handleCategoryClick(category.name)}
+                        >
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm">{category.icon}</span>
+                            <span className="text-xs text-gray-300">{category.name}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs font-medium text-white">${category.amount}</span>
+                            <div className="w-8 h-1.5 bg-gray-700 rounded-full">
+                              <motion.div
+                                className={`h-full bg-gradient-to-r ${category.color} rounded-full`}
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(category.amount / 640) * 100}%` }}
+                                transition={{ duration: 0.6, delay: idx * 0.05 }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
             </motion.div>
           </div>
         </div>
