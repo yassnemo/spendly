@@ -4,6 +4,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import { AnimatedCounter } from "@/components/ui/animated-counter";
 import { TextHoverEffect } from "@/components/ui/text-hover-effect";
+import { StarBorder } from "@/components/ui/StarBorder";
 import { 
   Navbar, 
   NavBody, 
@@ -175,12 +176,15 @@ export const LandingPage = () => {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <MagneticButton 
+                <StarBorder 
+                  color="cyan"
+                  speed="4s"
+                  thickness={0.5}
+                  className="inline-block"
                   onClick={() => openAuthModal("signup")}
-                  className="px-8 py-4 rounded-full text-lg"
                 >
                   Get Started Free
-                </MagneticButton>
+                </StarBorder>
                 <MagneticButton 
                   variant="secondary"
                   className="px-8 py-4 rounded-full text-lg"
