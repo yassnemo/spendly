@@ -175,3 +175,6 @@ secrets/
 
 # Local development
 .local/
+
+# Documentation and guides (development only)
+Guides.md

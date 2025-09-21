@@ -1,10 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background-color: hsl(240, 19%, 6%);">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <style>
+      /* Immediate dark background to prevent white flash */
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: hsl(240, 19%, 6%);
+        color: white;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      #root {
+        background-color: hsl(240, 19%, 6%);
+        min-height: 100vh;
+      }
+    </style>
   </head>
-  <body>
+  <body style="background-color: hsl(240, 19%, 6%); color: white;">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

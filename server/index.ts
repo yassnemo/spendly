@@ -69,7 +69,7 @@ app.use((req, res, next) => {
     const port = parseInt(process.env.PORT || "3000", 10);
     const host = process.env.NODE_ENV === "development" ? "localhost" : "0.0.0.0";
     server.listen(port, host as any, () => {
-      log(`🚀 Server running at http://${host}:${port}/`);
+      log(`Server running at http://${host}:${port}/`);
     });
   }
 })();

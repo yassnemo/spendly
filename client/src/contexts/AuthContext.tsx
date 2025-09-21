@@ -5,8 +5,7 @@ import {
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
   onAuthStateChanged,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
   sendPasswordResetEmail,
   updateProfile
 } from "firebase/auth";
@@ -38,7 +37,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("AuthProvider mounting...");
+    
+    // Add a failsafe timeout to prevent infinite loading
+    const failsafeTimeout = setTimeout(() => {
+      console.warn("Auth initialization took too long, setting loading to false");
+      setLoading(false);
+    }, 10000); // 10 second timeout
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log("Auth state changed:", user ? "User logged in" : "No user");
+      clearTimeout(failsafeTimeout);
+      
       if (user) {
         // Create or update user in backend
         try {
@@ -55,12 +65,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     });
 
-    // Handle redirect result for Google Sign-In
-    getRedirectResult(auth).catch((error) => {
-      console.error("Redirect sign-in error:", error);
-    });
-
-    return unsubscribe;
+    return () => {
+      clearTimeout(failsafeTimeout);
+      unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
@@ -82,8 +90,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signInWithGoogle = async () => {
     try {
-      await signInWithRedirect(auth, googleProvider);
+      setLoading(true);
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log("Google sign-in successful:", result.user.email);
+      // The onAuthStateChanged listener will handle the rest
     } catch (error: any) {
+      console.error("Google sign-in error:", error);
+      setLoading(false);
       throw new Error(error.message || "Failed to sign in with Google");
     }
   };

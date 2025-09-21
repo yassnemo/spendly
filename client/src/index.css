@@ -78,8 +78,14 @@
     @apply border-border;
   }
 
+  html {
+    background-color: hsl(240, 19%, 6%);
+  }
+
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    background-color: hsl(240, 19%, 6%);
+    color: white;
   }
 }
 
