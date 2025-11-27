@@ -1,0 +1,200 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 250 250 250;
+    --foreground: 24 24 27;
+    --card: 255 255 255;
+    --card-foreground: 24 24 27;
+    --primary: 212 113 79;
+    --primary-foreground: 255 255 255;
+    --secondary: 141 120 175;
+    --secondary-foreground: 255 255 255;
+    --accent: 72 145 138;
+    --accent-foreground: 255 255 255;
+    --muted: 244 244 245;
+    --muted-foreground: 113 113 122;
+    --border: 228 228 231;
+    --ring: 212 113 79;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 9 9 11;
+    --foreground: 250 250 250;
+    --card: 24 24 27;
+    --card-foreground: 250 250 250;
+    --primary: 212 113 79;
+    --primary-foreground: 255 255 255;
+    --secondary: 141 120 175;
+    --secondary-foreground: 255 255 255;
+    --accent: 72 145 138;
+    --accent-foreground: 255 255 255;
+    --muted: 39 39 42;
+    --muted-foreground: 161 161 170;
+    --border: 39 39 42;
+    --ring: 212 113 79;
+  }
+
+  * {
+    border-color: rgb(var(--border));
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-surface-50;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    @apply bg-primary-200 dark:bg-primary-800 text-primary-900 dark:text-primary-100;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary-500/50 ring-offset-2 ring-offset-white dark:ring-offset-surface-950;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white dark:bg-surface-900;
+    @apply rounded-2xl;
+    @apply border border-surface-200/60 dark:border-surface-800/60;
+    @apply shadow-soft;
+    @apply transition-all duration-300 ease-smooth;
+  }
+
+  .card-elevated {
+    @apply card shadow-soft-md hover:shadow-soft-lg hover:-translate-y-0.5;
+  }
+
+  .card-interactive {
+    @apply card-elevated cursor-pointer active:translate-y-0 active:shadow-soft;
+  }
+
+  .card-glass {
+    @apply bg-white/70 dark:bg-surface-900/70 backdrop-blur-xl backdrop-saturate-150;
+    @apply border border-white/20 dark:border-surface-700/30 shadow-soft;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-medium;
+    @apply transition-all duration-200 ease-smooth;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-500 text-white hover:bg-primary-600;
+    @apply shadow-soft-sm hover:shadow-soft-md hover:-translate-y-px active:translate-y-0;
+    @apply focus-visible:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary-500 text-white hover:bg-secondary-600;
+    @apply shadow-soft-sm hover:shadow-soft-md hover:-translate-y-px active:translate-y-0;
+    @apply focus-visible:ring-secondary-500;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-surface-600 dark:text-surface-400;
+    @apply hover:bg-surface-100 dark:hover:bg-surface-800 focus-visible:ring-surface-400;
+  }
+
+  .btn-outline {
+    @apply btn bg-transparent border-2 border-surface-200 dark:border-surface-700;
+    @apply text-surface-700 dark:text-surface-300;
+    @apply hover:bg-surface-100 dark:hover:bg-surface-800;
+    @apply hover:border-surface-300 dark:hover:border-surface-600;
+  }
+
+  .btn-sm { @apply px-3.5 py-2 text-sm rounded-xl; }
+  .btn-md { @apply px-5 py-2.5 text-sm rounded-xl; }
+  .btn-lg { @apply px-6 py-3 text-base rounded-2xl; }
+
+  .input {
+    @apply w-full bg-surface-50 dark:bg-surface-900;
+    @apply border border-surface-200 dark:border-surface-700 rounded-xl;
+    @apply text-surface-900 dark:text-surface-100;
+    @apply placeholder:text-surface-400 dark:placeholder:text-surface-500;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500;
+  }
+
+  .input-md { @apply input px-4 py-3 text-sm; }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary-500 via-secondary-500 to-accent-500;
+    @apply bg-clip-text text-transparent;
+  }
+
+  .skeleton {
+    @apply bg-surface-200 dark:bg-surface-800 rounded-lg animate-pulse;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.surface.300') transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-surface-300 dark:bg-surface-700 rounded-full;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl font-medium;
+    @apply transition-all duration-200;
+    @apply text-surface-600 dark:text-surface-400;
+    @apply hover:bg-surface-100 dark:hover:bg-surface-800;
+  }
+
+  .nav-item-active {
+    @apply nav-item bg-primary-50 dark:bg-primary-950/50;
+    @apply text-primary-600 dark:text-primary-400;
+  }
+
+  .chat-bubble {
+    @apply px-4 py-3 rounded-2xl max-w-[85%];
+  }
+
+  .chat-bubble-user {
+    @apply chat-bubble bg-primary-500 text-white rounded-br-md ml-auto;
+  }
+
+  .chat-bubble-ai {
+    @apply chat-bubble bg-surface-100 dark:bg-surface-800;
+    @apply text-surface-800 dark:text-surface-200 rounded-bl-md;
+  }
+}
+
+@layer utilities {
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+}
+
+.recharts-wrapper { @apply font-sans; }
+.recharts-text { @apply fill-surface-500 dark:fill-surface-400 text-xs font-medium; }
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  @apply stroke-surface-100 dark:stroke-surface-800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
