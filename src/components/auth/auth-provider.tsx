@@ -11,7 +11,7 @@ import {
   resetPassword,
   signInAsDemo,
   AuthUser,
-} from '@/lib/auth';
+} from '@/lib/firebase';
 
 interface AuthContextType {
   user: AuthUser | null;
