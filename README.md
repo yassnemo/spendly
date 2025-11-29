@@ -1,4 +1,4 @@
-# Smart Budget
+# Spendly
 
 A personal finance tracking app built with Next.js. Track expenses, set budgets, and get AI-powered insights.
 
