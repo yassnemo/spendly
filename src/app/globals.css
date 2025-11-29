@@ -198,3 +198,18 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+@keyframes cell-ripple {
+  0% {
+    background-color: transparent;
+    opacity: 0;
+  }
+  50% {
+    background-color: rgba(212, 113, 79, 0.25);
+    opacity: 1;
+  }
+  100% {
+    background-color: transparent;
+    opacity: 0;
+  }
+}
