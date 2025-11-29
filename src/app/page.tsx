@@ -1,15 +1,17 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store';
 import { OnboardingFlow } from '@/components/onboarding';
+import { LandingPage } from '@/components/landing';
 import { Skeleton } from '@/components/ui';
 
 export default function HomePage() {
   const router = useRouter();
   const isOnboarded = useStore((state) => state.isOnboarded);
   const isLoading = useStore((state) => state.isLoading);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     if (!isLoading && isOnboarded) {
@@ -28,7 +30,11 @@ export default function HomePage() {
     );
   }
 
-  if (!isOnboarded) {
+  if (!isOnboarded && !showOnboarding) {
+    return <LandingPage onGetStarted={() => setShowOnboarding(true)} />;
+  }
+
+  if (!isOnboarded && showOnboarding) {
     return <OnboardingFlow />;
   }
 

@@ -1,15 +1,22 @@
 import type { Metadata, Viewport } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/providers';
 
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
 export const metadata: Metadata = {
-  title: 'Smart Budget - Your Personal Finance Companion',
-  description: 'Track expenses, create budgets, and get AI-powered insights to improve your financial health.',
+  title: 'Spendly - Smart Budget Tracking',
+  description: 'Take control of your money. Track spending, set budgets, and reach your financial goals with AI-powered insights.',
   keywords: ['budget', 'finance', 'expense tracker', 'money management', 'AI insights'],
-  authors: [{ name: 'Smart Budget Team' }],
+  authors: [{ name: 'Spendly' }],
   openGraph: {
-    title: 'Smart Budget - Your Personal Finance Companion',
-    description: 'Track expenses, create budgets, and get AI-powered insights to improve your financial health.',
+    title: 'Spendly - Smart Budget Tracking',
+    description: 'Take control of your money. Track spending, set budgets, and reach your financial goals with AI-powered insights.',
     type: 'website',
   },
 };
@@ -19,8 +26,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+    { media: '(prefers-color-scheme: light)', color: '#fafaf9' },
+    { media: '(prefers-color-scheme: dark)', color: '#0c0c0b' },
   ],
 };
 
@@ -30,8 +37,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen antialiased">
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <body className="min-h-screen antialiased font-sans">
         <Providers>{children}</Providers>
       </body>
     </html>
