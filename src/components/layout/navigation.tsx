@@ -71,13 +71,11 @@ export const Sidebar: React.FC<{ className?: string }> = ({ className }) => {
       {/* Logo */}
       <div className="p-6">
         <Link href="/dashboard" className="flex items-center gap-3 group">
-          <div className={cn(
-            'w-10 h-10 rounded-xl flex items-center justify-center',
-            'bg-primary-500 shadow-soft-md',
-            'transition-transform duration-300 group-hover:scale-105'
-          )}>
-            <Wallet className="w-5 h-5 text-white" />
-          </div>
+          <img 
+            src="/images/logo.svg" 
+            alt="Spendly" 
+            className="w-10 h-10 rounded-xl shadow-soft-md transition-transform duration-300 group-hover:scale-105"
+          />
           <span className="text-xl font-bold text-surface-900 dark:text-white">
             SmartBudget
           </span>
@@ -341,10 +339,12 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
               <h1 className="text-xl font-bold text-surface-900 dark:text-white">{title}</h1>
             ) : (
               <Link href="/dashboard" className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center shadow-soft-sm">
-                  <Wallet className="w-4 h-4 text-white" />
-                </div>
-                <span className="font-bold text-surface-900 dark:text-white">SmartBudget</span>
+                <img 
+                  src="/images/logo.svg" 
+                  alt="Spendly" 
+                  className="w-8 h-8 rounded-lg shadow-soft-sm"
+                />
+                <span className="font-bold text-surface-900 dark:text-white">Spendly</span>
               </Link>
             )}
           </div>
@@ -382,10 +382,12 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                   className="flex items-center gap-2"
                   onClick={() => setMenuOpen(false)}
                 >
-                  <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center shadow-soft-sm">
-                    <Wallet className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-xl font-bold text-surface-900 dark:text-white">SmartBudget</span>
+                  <img 
+                    src="/images/logo.svg" 
+                    alt="Spendly" 
+                    className="w-10 h-10 rounded-xl shadow-soft-sm"
+                  />
+                  <span className="text-xl font-bold text-surface-900 dark:text-white">Spendly</span>
                 </Link>
                 <button
                   onClick={() => setMenuOpen(false)}

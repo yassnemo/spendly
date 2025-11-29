@@ -54,9 +54,11 @@ function Navbar({ onGetStarted }: { onGetStarted: () => void }) {
       <div className="mx-auto max-w-6xl px-6 py-4">
         <div className="flex items-center justify-between rounded-2xl bg-white/70 dark:bg-surface-900/70 backdrop-blur-xl px-6 py-3 shadow-soft border border-surface-200/50 dark:border-surface-800/50">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
-            </div>
+            <img 
+              src="/images/logo.svg" 
+              alt="Spendly" 
+              className="w-8 h-8 rounded-xl"
+            />
             <span className="font-semibold text-surface-900 dark:text-white tracking-tight">
               Spendly
             </span>
@@ -659,9 +661,11 @@ function Footer() {
           {/* Brand column */}
           <div className="col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
-                <span className="text-white font-bold">S</span>
-              </div>
+              <img 
+                src="/images/logo.svg" 
+                alt="Spendly" 
+                className="w-9 h-9 rounded-xl"
+              />
               <span className="font-semibold text-white text-lg tracking-tight">
                 Spendly
               </span>
