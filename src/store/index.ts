@@ -146,11 +146,18 @@ export const useStore = create<AppState>()(
           updatedAt: now,
         };
 
-        await expensesDB.add(expense);
-
+        // Update state first for immediate UI feedback
         set((state) => ({
           expenses: [...state.expenses, expense],
         }));
+
+        // Then persist to IndexedDB
+        try {
+          await expensesDB.add(expense);
+        } catch (error) {
+          console.error('Failed to persist expense:', error);
+          // Don't revert state - data is still in memory
+        }
 
         get().recalculateStats();
         return expense;
@@ -166,21 +173,33 @@ export const useStore = create<AppState>()(
           updatedAt: new Date().toISOString(),
         };
 
-        await expensesDB.update(updated);
-
+        // Update state first for immediate UI feedback
         set((state) => ({
           expenses: state.expenses.map((e) => (e.id === id ? updated : e)),
         }));
+
+        // Then persist to IndexedDB
+        try {
+          await expensesDB.update(updated);
+        } catch (error) {
+          console.error('Failed to update expense:', error);
+        }
 
         get().recalculateStats();
       },
 
       deleteExpense: async (id) => {
-        await expensesDB.delete(id);
-
+        // Update state first for immediate UI feedback
         set((state) => ({
           expenses: state.expenses.filter((e) => e.id !== id),
         }));
+
+        // Then persist to IndexedDB
+        try {
+          await expensesDB.delete(id);
+        } catch (error) {
+          console.error('Failed to delete expense:', error);
+        }
 
         get().recalculateStats();
       },
@@ -195,11 +214,17 @@ export const useStore = create<AppState>()(
           updatedAt: now,
         };
 
-        await incomesDB.add(income);
-
+        // Update state first for immediate UI feedback
         set((state) => ({
           incomes: [...state.incomes, income],
         }));
+
+        // Then persist to IndexedDB
+        try {
+          await incomesDB.add(income);
+        } catch (error) {
+          console.error('Failed to persist income:', error);
+        }
 
         get().recalculateStats();
         return income;
@@ -215,21 +240,33 @@ export const useStore = create<AppState>()(
           updatedAt: new Date().toISOString(),
         };
 
-        await incomesDB.update(updated);
-
+        // Update state first for immediate UI feedback
         set((state) => ({
           incomes: state.incomes.map((i) => (i.id === id ? updated : i)),
         }));
+
+        // Then persist to IndexedDB
+        try {
+          await incomesDB.update(updated);
+        } catch (error) {
+          console.error('Failed to update income:', error);
+        }
 
         get().recalculateStats();
       },
 
       deleteIncome: async (id) => {
-        await incomesDB.delete(id);
-
+        // Update state first for immediate UI feedback
         set((state) => ({
           incomes: state.incomes.filter((i) => i.id !== id),
         }));
+
+        // Then persist to IndexedDB
+        try {
+          await incomesDB.delete(id);
+        } catch (error) {
+          console.error('Failed to delete income:', error);
+        }
 
         get().recalculateStats();
       },
@@ -245,12 +282,20 @@ export const useStore = create<AppState>()(
 
         if (existing) {
           const updated = { ...existing, limit, updatedAt: now };
-          await budgetsDB.update(updated);
+          
+          // Update state first
           set((state) => ({
             budgets: state.budgets.map((b) =>
               b.id === existing.id ? updated : b
             ),
           }));
+          
+          // Then persist
+          try {
+            await budgetsDB.update(updated);
+          } catch (error) {
+            console.error('Failed to update budget:', error);
+          }
         } else {
           const budget: Budget = {
             id: generateId(),
@@ -261,10 +306,18 @@ export const useStore = create<AppState>()(
             createdAt: now,
             updatedAt: now,
           };
-          await budgetsDB.add(budget);
+          
+          // Update state first
           set((state) => ({
             budgets: [...state.budgets, budget],
           }));
+          
+          // Then persist
+          try {
+            await budgetsDB.add(budget);
+          } catch (error) {
+            console.error('Failed to add budget:', error);
+          }
         }
 
         get().recalculateStats();
@@ -303,11 +356,17 @@ export const useStore = create<AppState>()(
           updatedAt: now,
         };
 
-        await goalsDB.add(goal);
-
+        // Update state first for immediate UI feedback
         set((state) => ({
           goals: [...state.goals, goal],
         }));
+
+        // Then persist to IndexedDB
+        try {
+          await goalsDB.add(goal);
+        } catch (error) {
+          console.error('Failed to persist goal:', error);
+        }
 
         return goal;
       },
@@ -322,19 +381,31 @@ export const useStore = create<AppState>()(
           updatedAt: new Date().toISOString(),
         };
 
-        await goalsDB.update(updated);
-
+        // Update state first
         set((state) => ({
           goals: state.goals.map((g) => (g.id === id ? updated : g)),
         }));
+
+        // Then persist
+        try {
+          await goalsDB.update(updated);
+        } catch (error) {
+          console.error('Failed to update goal:', error);
+        }
       },
 
       deleteGoal: async (id) => {
-        await goalsDB.delete(id);
-
+        // Update state first
         set((state) => ({
           goals: state.goals.filter((g) => g.id !== id),
         }));
+
+        // Then persist
+        try {
+          await goalsDB.delete(id);
+        } catch (error) {
+          console.error('Failed to delete goal:', error);
+        }
       },
 
       addToGoal: async (id, amount) => {
@@ -347,11 +418,17 @@ export const useStore = create<AppState>()(
           updatedAt: new Date().toISOString(),
         };
 
-        await goalsDB.update(updated);
-
+        // Update state first
         set((state) => ({
           goals: state.goals.map((g) => (g.id === id ? updated : g)),
         }));
+
+        // Then persist
+        try {
+          await goalsDB.update(updated);
+        } catch (error) {
+          console.error('Failed to update goal amount:', error);
+        }
       },
 
       // Profile actions
@@ -503,6 +580,13 @@ export const useStore = create<AppState>()(
           ...budget,
           spent: byCategory[budget.category] || 0,
         }));
+
+        // Persist updated budget spent amounts to IndexedDB (non-blocking)
+        updatedBudgets.forEach((budget) => {
+          budgetsDB.update(budget).catch((err) => 
+            console.error('Failed to sync budget spent:', err)
+          );
+        });
 
         // Calculate budget adherence
         const budgetAdherence = updatedBudgets.length
