@@ -10,6 +10,7 @@ import { FloatingChat } from '@/components/chat/floating-chat';
 export function Providers({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const initialize = useStore((state) => state.initialize);
+  const isOnboarded = useStore((state) => state.isOnboarded);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -25,8 +26,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Show floating chat on app pages (not landing page or error pages)
-  const showFloatingChat = pathname !== '/' && pathname !== '/not-found' && !pathname?.startsWith('/auth');
+  // Show floating chat only on app pages when user is onboarded
+  // Hide on landing page, auth pages, and when not logged in
+  const showFloatingChat = isOnboarded && pathname !== '/' && !pathname?.startsWith('/auth');
 
   return (
     <AuthProvider>
