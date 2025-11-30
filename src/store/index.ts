@@ -81,6 +81,7 @@ interface AppState {
   // Utility
   recalculateStats: () => void;
   setCurrentMonth: (month: string) => void;
+  resetStore: () => Promise<void>;
 }
 
 export const useStore = create<AppState>()(
@@ -624,6 +625,35 @@ export const useStore = create<AppState>()(
       setCurrentMonth: (month) => {
         set({ currentMonth: month });
         get().recalculateStats();
+      },
+
+      resetStore: async () => {
+        // Clear all IndexedDB data
+        try {
+          await Promise.all([
+            expensesDB.clear(),
+            incomesDB.clear(),
+            budgetsDB.clear(),
+            goalsDB.clear(),
+            insightsDB.clear(),
+            profileDB.clear(),
+          ]);
+        } catch (error) {
+          console.error('Failed to clear IndexedDB:', error);
+        }
+
+        // Reset state to initial values
+        set({
+          expenses: [],
+          incomes: [],
+          budgets: [],
+          goals: [],
+          insights: [],
+          profile: null,
+          isOnboarded: false,
+          monthlyStats: null,
+          financialHealth: null,
+        });
       },
     }),
     {

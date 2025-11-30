@@ -176,6 +176,7 @@ export const expensesDB = {
   delete: (id: string) => db.delete('expenses', id),
   getByCategory: (category: string) =>
     db.getByIndex<Expense>('expenses', 'category', category),
+  clear: () => db.clear('expenses'),
 };
 
 export const incomesDB = {
@@ -184,6 +185,7 @@ export const incomesDB = {
   add: (income: Income) => db.add<Income>('incomes', income),
   update: (income: Income) => db.put<Income>('incomes', income),
   delete: (id: string) => db.delete('incomes', id),
+  clear: () => db.clear('incomes'),
 };
 
 export const budgetsDB = {
@@ -193,6 +195,7 @@ export const budgetsDB = {
   update: (budget: Budget) => db.put<Budget>('budgets', budget),
   delete: (id: string) => db.delete('budgets', id),
   getByMonth: (month: string) => db.getByIndex<Budget>('budgets', 'month', month),
+  clear: () => db.clear('budgets'),
 };
 
 export const goalsDB = {
@@ -201,6 +204,7 @@ export const goalsDB = {
   add: (goal: SavingsGoal) => db.add<SavingsGoal>('goals', goal),
   update: (goal: SavingsGoal) => db.put<SavingsGoal>('goals', goal),
   delete: (id: string) => db.delete('goals', id),
+  clear: () => db.clear('goals'),
 };
 
 export const profileDB = {
@@ -209,6 +213,7 @@ export const profileDB = {
     return profiles[0];
   },
   set: (profile: UserProfile) => db.put<UserProfile>('profile', profile),
+  clear: () => db.clear('profile'),
 };
 
 export const insightsDB = {
