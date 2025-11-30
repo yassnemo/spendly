@@ -38,14 +38,21 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ expense, onClose }) => {
   const [category, setCategory] = useState<CategoryType>(expense?.category || 'other');
   const [date, setDate] = useState(expense?.date?.split('T')[0] || new Date().toISOString().split('T')[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userSelectedCategory, setUserSelectedCategory] = useState(!!expense); // Track if user manually selected
 
-  // Auto-categorize on description change
+  // Auto-categorize on description change - only if user hasn't manually selected
   React.useEffect(() => {
-    if (description && !expense) {
+    if (description && !expense && !userSelectedCategory) {
       const suggestedCategory = categorizeExpenseLocal(description);
       setCategory(suggestedCategory);
     }
-  }, [description, expense]);
+  }, [description, expense, userSelectedCategory]);
+
+  // Handle manual category selection
+  const handleCategorySelect = (cat: CategoryType) => {
+    setCategory(cat);
+    setUserSelectedCategory(true); // Mark that user manually selected
+  };
 
   const handleQuickAmount = (value: number) => {
     setAmount(value.toString());
@@ -148,7 +155,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ expense, onClose }) => {
             <button
               key={cat.id}
               type="button"
-              onClick={() => setCategory(cat.id)}
+              onClick={() => handleCategorySelect(cat.id)}
               className={cn(
                 'flex flex-col items-center gap-1 p-3 rounded-xl transition-all duration-200',
                 category === cat.id
