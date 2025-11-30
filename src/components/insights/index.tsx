@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles,
@@ -10,21 +10,14 @@ import {
   TrendingDown,
   CheckCircle,
   RefreshCw,
-  Send,
-  Bot,
   Zap,
-  Target,
   PieChart,
-  ArrowRight,
   X,
-  Loader2,
-  MessageCircle,
 } from 'lucide-react';
 import { useStore } from '@/store';
 import { Card, Button, Badge, Skeleton, EmptyState } from '@/components/ui';
 import { cn, formatCurrency, calculateSavingsRate } from '@/lib/utils';
-import { generateLocalInsights, generateWeeklyTips, detectAnomalies } from '@/lib/ai';
-import { chatWithAssistant, generateQuickInsights, FinancialContext, ChatMessage } from '@/lib/gemini';
+import { generateWeeklyTips, detectAnomalies } from '@/lib/ai';
 import { CATEGORIES } from '@/lib/constants';
 import { AIInsight } from '@/types';
 
@@ -387,215 +380,6 @@ const SpendingAnalysis: React.FC = () => {
   );
 };
 
-// AI Chat Interface with Gemini
-const AIChat: React.FC = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const expenses = useStore((state) => state.expenses);
-  const budgets = useStore((state) => state.budgets);
-  const goals = useStore((state) => state.goals);
-  const profile = useStore((state) => state.profile);
-  const monthlyStats = useStore((state) => state.monthlyStats);
-
-  // Generate quick suggestions based on expense data
-  const getQuickSuggestions = () => {
-    const suggestions = [
-      "How am I doing with my budget this month?",
-      "What are my biggest spending categories?",
-      "How can I save more money?",
-      "Give me tips for reducing expenses",
-    ];
-    return suggestions;
-  };
-
-  useEffect(() => {
-    setSuggestions(getQuickSuggestions());
-  }, []);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  const handleSend = async (text?: string) => {
-    const messageText = text || input.trim();
-    if (!messageText || isLoading) return;
-
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: messageText,
-      timestamp: new Date().toISOString(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
-    setIsLoading(true);
-
-    try {
-      // Build financial context for the AI
-      const context: FinancialContext = {
-        totalExpenses: monthlyStats?.totalExpenses || 0,
-        totalIncome: monthlyStats?.totalIncome || 0,
-        savingsRate: monthlyStats ? calculateSavingsRate(monthlyStats.totalIncome, monthlyStats.totalExpenses) : 0,
-        topCategories: monthlyStats?.byCategory 
-          ? Object.entries(monthlyStats.byCategory)
-              .map(([name, amount]) => ({ name, amount }))
-              .sort((a, b) => b.amount - a.amount)
-              .slice(0, 5)
-          : [],
-        budgetUtilization: budgets.length > 0 
-          ? budgets.reduce((sum, b) => sum + (monthlyStats?.byCategory?.[b.category] || 0) / b.limit * 100, 0) / budgets.length
-          : 0,
-        currency: profile?.currency || 'USD',
-      };
-
-      const response = await chatWithAssistant(messageText, messages, context);
-
-      const assistantMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: response,
-        timestamp: new Date().toISOString(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      const errorMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'I apologize, but I encountered an error. Please check your API key in settings or try again later.',
-        timestamp: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <Card className="overflow-hidden flex flex-col h-[480px]">
-      <div className="flex items-center gap-3 pb-4 border-b border-surface-100 dark:border-surface-700/50">
-        <div className="relative">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center shadow-soft-sm">
-            <Bot className="w-5 h-5 text-white" />
-          </div>
-          <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-success-500 rounded-full border-2 border-white dark:border-surface-900" />
-        </div>
-        <div>
-          <h3 className="font-semibold text-surface-900 dark:text-white">
-            AI Assistant
-          </h3>
-          <p className="text-xs text-surface-500">Powered by Gemini</p>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto py-4 space-y-4 scrollbar-thin">
-        {messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center px-4">
-            <div className="w-16 h-16 rounded-2xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
-              <MessageCircle className="w-8 h-8 text-surface-400" />
-            </div>
-            <p className="text-sm text-surface-600 dark:text-surface-400 mb-4">
-              Ask me anything about your finances, budgets, or spending habits.
-            </p>
-            <div className="flex flex-wrap justify-center gap-2">
-              {suggestions.slice(0, 3).map((suggestion, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSend(suggestion)}
-                  className={cn(
-                    'px-3 py-1.5 text-xs rounded-full transition-all duration-200',
-                    'bg-surface-100 dark:bg-surface-800',
-                    'text-surface-600 dark:text-surface-400',
-                    'hover:bg-primary-100 hover:text-primary-600',
-                    'dark:hover:bg-primary-900/30 dark:hover:text-primary-400',
-                    'border border-surface-200 dark:border-surface-700'
-                  )}
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <>
-            {messages.map((message) => (
-              <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={cn(
-                  'flex',
-                  message.role === 'user' ? 'justify-end' : 'justify-start'
-                )}
-              >
-                <div
-                  className={cn(
-                    'max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed',
-                    message.role === 'user'
-                      ? 'bg-primary-500 text-white rounded-br-md'
-                      : 'bg-surface-100 dark:bg-surface-800 text-surface-900 dark:text-white rounded-bl-md'
-                  )}
-                >
-                  {message.content}
-                </div>
-              </motion.div>
-            ))}
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex justify-start"
-              >
-                <div className="px-4 py-3 rounded-2xl rounded-bl-md bg-surface-100 dark:bg-surface-800">
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-primary-500" />
-                    <span className="text-sm text-surface-500">Thinking...</span>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-            <div ref={messagesEndRef} />
-          </>
-        )}
-      </div>
-
-      <div className="pt-4 border-t border-surface-100 dark:border-surface-700/50">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Ask about your finances..."
-            disabled={isLoading}
-            className={cn(
-              'flex-1 px-4 py-3 rounded-xl text-sm',
-              'bg-surface-50 dark:bg-surface-800',
-              'border border-surface-200 dark:border-surface-700',
-              'focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500',
-              'placeholder:text-surface-400',
-              'disabled:opacity-50 disabled:cursor-not-allowed',
-              'transition-all duration-200'
-            )}
-          />
-          <Button
-            onClick={() => handleSend()}
-            disabled={!input.trim() || isLoading}
-            className="!px-4"
-          >
-            <Send className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-    </Card>
-  );
-};
-
 // Main Insights Page
 export const InsightsPage: React.FC = () => {
   const insights = useStore((state) => state.insights);
@@ -748,7 +532,6 @@ export const InsightsPage: React.FC = () => {
         {/* Sidebar */}
         <div className="space-y-6">
           <WeeklyTips />
-          <AIChat />
         </div>
       </div>
     </div>
