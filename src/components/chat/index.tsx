@@ -345,3 +345,6 @@ export const ChatButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
     </motion.button>
   );
 };
+
+// Re-export floating chat
+export { FloatingChat } from './floating-chat';
