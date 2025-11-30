@@ -114,18 +114,18 @@ export const BUDGET_DEFAULTS: Record<CategoryType, number> = {
 // Quick add amounts
 export const QUICK_AMOUNTS = [5, 10, 20, 50, 100, 200];
 
-// Chart colors
+// Chart colors - coordinated with site design
 export const CHART_COLORS = [
-  '#e86f5c', // primary
-  '#a855f7', // secondary
-  '#ff8011', // accent
-  '#3b82f6',
-  '#10b981',
-  '#f59e0b',
-  '#ec4899',
-  '#8b5cf6',
-  '#06b6d4',
-  '#6b7280',
+  '#3b82f6', // primary blue
+  '#6366f1', // indigo
+  '#8b5cf6', // violet
+  '#a855f7', // purple
+  '#06b6d4', // cyan
+  '#14b8a6', // teal
+  '#10b981', // emerald
+  '#f59e0b', // amber
+  '#f97316', // orange
+  '#64748b', // slate
 ];
 
 // Savings goal icons
@@ -142,14 +142,14 @@ export const GOAL_ICONS = [
   'Star',
 ];
 
-// Goal colors
+// Goal colors - coordinated with primary palette
 export const GOAL_COLORS = [
-  '#e86f5c',
-  '#a855f7',
-  '#ff8011',
-  '#3b82f6',
-  '#10b981',
-  '#f59e0b',
-  '#ec4899',
-  '#8b5cf6',
+  '#3b82f6', // primary blue
+  '#6366f1', // indigo
+  '#8b5cf6', // violet
+  '#06b6d4', // cyan
+  '#10b981', // emerald
+  '#f59e0b', // amber
+  '#f97316', // orange
+  '#14b8a6', // teal
 ];
