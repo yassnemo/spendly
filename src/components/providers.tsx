@@ -1,13 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { useStore } from '@/store';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from '@/components/auth/auth-provider';
+import { FloatingChat } from '@/components/chat/floating-chat';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const initialize = useStore((state) => state.initialize);
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -22,9 +25,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // Show floating chat on app pages (not landing page or error pages)
+  const showFloatingChat = pathname !== '/' && pathname !== '/not-found' && !pathname?.startsWith('/auth');
+
   return (
     <AuthProvider>
-      <ThemeProvider>{children}</ThemeProvider>
+      <ThemeProvider>
+        {children}
+        {showFloatingChat && <FloatingChat />}
+      </ThemeProvider>
     </AuthProvider>
   );
 }
