@@ -96,7 +96,7 @@ export const useStore = create<AppState>()(
       isLoading: true,
       isOnboarded: false,
       currentMonth: getCurrentMonth(),
-      theme: 'system',
+      theme: 'dark',
       monthlyStats: null,
       financialHealth: null,
 
