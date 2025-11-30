@@ -87,7 +87,7 @@ function Navbar({ onGetStarted }: { onGetStarted: () => void }) {
 
 function Hero({ onGetStarted }: { onGetStarted: () => void }) {
   return (
-    <section className="relative pt-32 pb-20 md:pt-44 md:pb-32">
+    <section className="relative min-h-[100svh] md:min-h-0 md:pt-44 md:pb-32 flex flex-col">
       {/* Background Ripple Effect - top portion only with fade */}
       <div className="absolute top-0 left-0 right-0 h-[600px] overflow-hidden pointer-events-auto">
         <BackgroundRippleEffect />
@@ -103,13 +103,17 @@ function Hero({ onGetStarted }: { onGetStarted: () => void }) {
         <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-secondary-200/20 dark:bg-secondary-900/10 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-6xl px-6">
+      {/* Mobile: Full height layout with content distributed */}
+      <div className="relative z-10 mx-auto max-w-6xl px-6 flex-1 flex flex-col pt-28 pb-8 md:pt-0 md:pb-0 md:block">
+        {/* Spacer for mobile - pushes content down from navbar */}
+        <div className="flex-1 md:hidden" />
+        
         <div className="text-center max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-50 dark:bg-primary-950/50 border border-primary-100 dark:border-primary-900/50 mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-50 dark:bg-primary-950/50 border border-primary-100 dark:border-primary-900/50 mb-6 md:mb-8"
           >
             <Sparkles className="w-4 h-4 text-primary-600 dark:text-primary-400" />
             <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
@@ -121,7 +125,7 @@ function Hero({ onGetStarted }: { onGetStarted: () => void }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold text-surface-900 dark:text-white tracking-tight leading-[1.1]"
+            className="text-3xl md:text-6xl lg:text-7xl font-bold text-surface-900 dark:text-white tracking-tight leading-[1.1]"
           >
             Take control of
             <br />
@@ -134,42 +138,48 @@ function Hero({ onGetStarted }: { onGetStarted: () => void }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-6 text-lg md:text-xl text-surface-600 dark:text-surface-400 max-w-xl mx-auto leading-relaxed"
+            className="mt-4 md:mt-6 text-base md:text-xl text-surface-600 dark:text-surface-400 max-w-xl mx-auto leading-relaxed"
           >
             Track spending, set budgets, and reach your financial goals with intelligent insights that adapt to your lifestyle.
           </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <button
-              onClick={onGetStarted}
-              className="group w-full sm:w-auto px-8 py-4 text-base font-medium text-white bg-surface-900 dark:bg-white dark:text-surface-900 rounded-2xl hover:bg-surface-800 dark:hover:bg-surface-100 transition-all shadow-soft-lg hover:shadow-soft-xl hover:-translate-y-0.5"
-            >
-              <span className="flex items-center justify-center gap-2">
-                Start for free
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </button>
-
-            <a
-              href="#how-it-works"
-              className="w-full sm:w-auto px-8 py-4 text-base font-medium text-surface-700 dark:text-surface-300 rounded-2xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
-            >
-              See how it works
-            </a>
-          </motion.div>
         </div>
 
-        {/* App Preview */}
+        {/* Spacer for mobile - creates space between content and buttons */}
+        <div className="flex-1 md:hidden" />
+
+        {/* Buttons container - positioned near bottom on mobile */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 max-w-3xl mx-auto w-full"
+        >
+          <button
+            onClick={onGetStarted}
+            className="group w-full sm:w-auto px-8 py-4 text-base font-medium text-white bg-surface-900 dark:bg-white dark:text-surface-900 rounded-2xl hover:bg-surface-800 dark:hover:bg-surface-100 transition-all shadow-soft-lg hover:shadow-soft-xl hover:-translate-y-0.5"
+          >
+            <span className="flex items-center justify-center gap-2">
+              Start for free
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </span>
+          </button>
+
+          <a
+            href="#how-it-works"
+            className="w-full sm:w-auto px-8 py-4 text-base font-medium text-surface-700 dark:text-surface-300 rounded-2xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-center"
+          >
+            See how it works
+          </a>
+        </motion.div>
+      </div>
+
+      {/* App Preview - Hidden on mobile for clean hero, shown on md+ */}
+      <div className="hidden md:block relative z-10 mx-auto max-w-6xl px-6 mt-24">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5 }}
-          className="mt-16 md:mt-24 relative"
+          className="relative"
         >
           <div className="relative mx-auto max-w-4xl">
             {/* Browser frame */}
