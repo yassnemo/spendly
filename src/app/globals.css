@@ -7,37 +7,37 @@
 @layer base {
   :root {
     --background: 250 250 250;
-    --foreground: 24 24 27;
+    --foreground: 23 23 23;
     --card: 255 255 255;
-    --card-foreground: 24 24 27;
-    --primary: 212 113 79;
+    --card-foreground: 23 23 23;
+    --primary: 59 130 246;
     --primary-foreground: 255 255 255;
-    --secondary: 141 120 175;
+    --secondary: 115 115 115;
     --secondary-foreground: 255 255 255;
-    --accent: 72 145 138;
+    --accent: 59 130 246;
     --accent-foreground: 255 255 255;
-    --muted: 244 244 245;
-    --muted-foreground: 113 113 122;
-    --border: 228 228 231;
-    --ring: 212 113 79;
+    --muted: 245 245 245;
+    --muted-foreground: 115 115 115;
+    --border: 229 229 229;
+    --ring: 59 130 246;
     --radius: 0.75rem;
   }
 
   .dark {
-    --background: 9 9 11;
+    --background: 10 10 10;
     --foreground: 250 250 250;
-    --card: 24 24 27;
+    --card: 23 23 23;
     --card-foreground: 250 250 250;
-    --primary: 212 113 79;
+    --primary: 59 130 246;
     --primary-foreground: 255 255 255;
-    --secondary: 141 120 175;
+    --secondary: 115 115 115;
     --secondary-foreground: 255 255 255;
-    --accent: 72 145 138;
+    --accent: 59 130 246;
     --accent-foreground: 255 255 255;
-    --muted: 39 39 42;
-    --muted-foreground: 161 161 170;
-    --border: 39 39 42;
-    --ring: 212 113 79;
+    --muted: 38 38 38;
+    --muted-foreground: 163 163 163;
+    --border: 38 38 38;
+    --ring: 59 130 246;
   }
 
   * {
@@ -57,7 +57,7 @@
   }
 
   ::selection {
-    @apply bg-primary-200 dark:bg-primary-800 text-primary-900 dark:text-primary-100;
+    @apply bg-primary-500/30 dark:bg-primary-500/30 text-white dark:text-white;
   }
 
   :focus-visible {
@@ -144,13 +144,28 @@
 
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: theme('colors.surface.300') transparent;
+    scrollbar-color: rgba(163, 163, 163, 0.5) transparent;
   }
 
-  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
-  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .dark .scrollbar-thin {
+    scrollbar-color: rgba(82, 82, 82, 0.6) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar { width: 5px; height: 5px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; border-radius: 10px; }
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-surface-300 dark:bg-surface-700 rounded-full;
+    background: rgba(163, 163, 163, 0.5);
+    border-radius: 10px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(115, 115, 115, 0.7);
+  }
+  
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(82, 82, 82, 0.6);
+  }
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(115, 115, 115, 0.7);
   }
 
   .nav-item {
@@ -205,7 +220,7 @@
     opacity: 0;
   }
   50% {
-    background-color: rgba(212, 113, 79, 0.25);
+    background-color: rgba(59, 130, 246, 0.25);
     opacity: 1;
   }
   100% {
