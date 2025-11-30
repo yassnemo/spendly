@@ -96,13 +96,13 @@ const StatsCard: React.FC<StatsCardProps> = ({
   
   return (
     <motion.div variants={itemVariants} className="group">
-      <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-soft-lg">
+      <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-soft-lg !p-3 sm:!p-5">
         <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <p className="text-sm font-medium text-surface-500 dark:text-surface-400">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs sm:text-sm font-medium text-surface-500 dark:text-surface-400">
               {title}
             </p>
-            <p className="mt-2 text-2xl font-bold text-surface-900 dark:text-white tracking-tight">
+            <p className="mt-1 sm:mt-2 text-lg sm:text-2xl font-bold text-surface-900 dark:text-white tracking-tight truncate">
               {value}
             </p>
             {change !== undefined && (
@@ -126,12 +126,12 @@ const StatsCard: React.FC<StatsCardProps> = ({
           </div>
           <div
             className={cn(
-              'w-12 h-12 rounded-xl flex items-center justify-center shadow-soft-sm',
+              'w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-soft-sm',
               'transition-transform duration-300 group-hover:scale-110',
               colors.bg
             )}
           >
-            <Icon className="w-6 h-6 text-white" />
+            <Icon className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
           </div>
         </div>
         
@@ -183,18 +183,18 @@ const HealthScore: React.FC = () => {
   return (
     <motion.div variants={itemVariants}>
       <Card className="h-full">
-        <div className="flex items-center justify-between mb-5">
-          <h3 className="font-semibold text-surface-900 dark:text-white">
+        <div className="flex items-center justify-between mb-4 sm:mb-5">
+          <h3 className="font-semibold text-surface-900 dark:text-white text-sm sm:text-base">
             Financial Health
           </h3>
-          <Badge className={cn(config.color, config.bg)}>
+          <Badge className={cn(config.color, config.bg, 'text-xs')}>
             {config.label}
           </Badge>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 sm:gap-6">
           {/* Circular progress */}
-          <div className="relative w-24 h-24 flex-shrink-0">
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
               <circle
                 cx="50"
@@ -226,12 +226,12 @@ const HealthScore: React.FC = () => {
               </defs>
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-2xl font-bold text-surface-900 dark:text-white">{score}</span>
+              <span className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-white">{score}</span>
             </div>
           </div>
 
-          <div className="flex-1">
-            <p className="text-sm text-surface-500 mb-4 leading-relaxed">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs sm:text-sm text-surface-500 mb-3 sm:mb-4 leading-relaxed">
               Based on your savings rate, budget adherence, and goal progress.
             </p>
             <Link
@@ -266,14 +266,14 @@ const RecentTransactions: React.FC = () => {
   return (
     <motion.div variants={itemVariants}>
       <Card className="h-full">
-        <div className="flex items-center justify-between mb-5">
-          <h3 className="font-semibold text-surface-900 dark:text-white">
+        <div className="flex items-center justify-between mb-4 sm:mb-5">
+          <h3 className="font-semibold text-surface-900 dark:text-white text-sm sm:text-base">
             Recent Transactions
           </h3>
           <Link
             href="/expenses"
             className={cn(
-              'text-sm font-medium',
+              'text-xs sm:text-sm font-medium',
               'text-primary-600 dark:text-primary-400',
               'hover:text-primary-700 dark:hover:text-primary-300',
               'transition-colors duration-200'
@@ -343,14 +343,14 @@ const BudgetOverview: React.FC = () => {
   return (
     <motion.div variants={itemVariants}>
       <Card className="h-full">
-        <div className="flex items-center justify-between mb-5">
-          <h3 className="font-semibold text-surface-900 dark:text-white">
+        <div className="flex items-center justify-between mb-4 sm:mb-5">
+          <h3 className="font-semibold text-surface-900 dark:text-white text-sm sm:text-base">
             Budget Overview
           </h3>
           <Link
             href="/budget"
             className={cn(
-              'text-sm font-medium',
+              'text-xs sm:text-sm font-medium',
               'text-primary-600 dark:text-primary-400',
               'hover:text-primary-700 dark:hover:text-primary-300',
               'transition-colors duration-200'
@@ -453,28 +453,28 @@ export const Dashboard: React.FC = () => {
       variants={containerVariants}
       initial="hidden"
       animate="show"
-      className="p-4 lg:p-8 space-y-6 max-w-7xl mx-auto"
+      className="p-4 lg:p-8 space-y-4 sm:space-y-6 max-w-7xl mx-auto pb-24 sm:pb-8"
     >
       {/* Header */}
       <motion.div variants={itemVariants}>
-        <h1 className="text-2xl lg:text-3xl font-bold text-surface-900 dark:text-white">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-surface-900 dark:text-white">
           {getGreeting()}, {profile?.name || 'there'}
         </h1>
-        <p className="mt-1 text-surface-500">
-          Here is your financial overview for this month
+        <p className="mt-1 text-sm sm:text-base text-surface-500">
+          Your financial overview for this month
         </p>
       </motion.div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Stats Cards - 2x2 grid on mobile for better visibility */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatsCard
-          title="Total Income"
+          title="Income"
           value={formatCurrency(monthlyStats?.totalIncome || 0, currency)}
           icon={TrendingUp}
           color="success"
         />
         <StatsCard
-          title="Total Expenses"
+          title="Expenses"
           value={formatCurrency(monthlyStats?.totalExpenses || 0, currency)}
           icon={Receipt}
           color="danger"
@@ -488,7 +488,7 @@ export const Dashboard: React.FC = () => {
           color="primary"
         />
         <StatsCard
-          title="Goals Progress"
+          title="Budget Used"
           value={`${calculatePercentage(
             monthlyStats?.totalExpenses || 0,
             monthlyStats?.totalIncome || 1
@@ -499,10 +499,10 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <motion.div variants={itemVariants}>
           <Card className="h-full">
-            <h3 className="font-semibold text-surface-900 dark:text-white mb-6">
+            <h3 className="font-semibold text-surface-900 dark:text-white mb-4 sm:mb-6 text-sm sm:text-base">
               Spending Trend
             </h3>
             <SpendingChart />
@@ -510,7 +510,7 @@ export const Dashboard: React.FC = () => {
         </motion.div>
         <motion.div variants={itemVariants}>
           <Card className="h-full">
-            <h3 className="font-semibold text-surface-900 dark:text-white mb-6">
+            <h3 className="font-semibold text-surface-900 dark:text-white mb-4 sm:mb-6 text-sm sm:text-base">
               Spending by Category
             </h3>
             <CategoryPieChart />
@@ -518,8 +518,8 @@ export const Dashboard: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Bottom Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Bottom Row - Stack on mobile, 3 columns on desktop */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <HealthScore />
         <BudgetOverview />
         <RecentTransactions />
