@@ -168,6 +168,25 @@
     background: rgba(115, 115, 115, 0.7);
   }
 
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide number input spinners/arrows */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
   .nav-item {
     @apply flex items-center gap-3 px-4 py-3 rounded-xl font-medium;
     @apply transition-all duration-200;
