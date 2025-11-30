@@ -255,7 +255,7 @@ export const FloatingChat: React.FC = () => {
 
   return (
     <>
-      {/* Chat Button */}
+      {/* Chat Button - positioned above mobile nav */}
       <AnimatePresence>
         {!isOpen && (
           <motion.button
@@ -266,17 +266,20 @@ export const FloatingChat: React.FC = () => {
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(true)}
             className={cn(
-              'fixed bottom-4 right-4 z-50',
-              'w-14 h-14 rounded-full',
+              'fixed z-50',
+              'w-12 h-12 sm:w-14 sm:h-14 rounded-full',
               'bg-gradient-to-br from-primary-500 to-primary-600',
               'text-white shadow-lg',
               'flex items-center justify-center',
               'hover:shadow-xl hover:shadow-primary-500/25 transition-shadow',
+              // Mobile: above bottom nav (nav height ~60px + safe area)
+              'bottom-20 right-4',
+              // Desktop: normal position
               'lg:bottom-6 lg:right-6'
             )}
             aria-label="Open chat assistant"
           >
-            <MessageCircle className="w-6 h-6" />
+            <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -290,14 +293,17 @@ export const FloatingChat: React.FC = () => {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'fixed bottom-4 right-4 z-50',
-              'w-[360px] h-[500px]',
+              'fixed z-50',
+              // Mobile: full width with padding, above bottom nav
+              'bottom-20 left-3 right-3',
+              'h-[60vh] max-h-[500px]',
+              // Desktop: fixed size
+              'lg:bottom-6 lg:right-6 lg:left-auto',
+              'lg:w-[360px] lg:h-[500px]',
               'flex flex-col',
               'bg-white dark:bg-surface-900',
               'border border-surface-200 dark:border-surface-700',
-              'shadow-2xl rounded-2xl overflow-hidden',
-              'lg:bottom-6 lg:right-6',
-              'max-[400px]:left-2 max-[400px]:right-2 max-[400px]:w-auto'
+              'shadow-2xl rounded-2xl overflow-hidden'
             )}
           >
             {/* Header */}
