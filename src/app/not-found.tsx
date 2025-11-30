@@ -8,7 +8,7 @@ import { ChevronRight } from 'lucide-react';
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-surface-950 flex items-center justify-center px-6 py-12">
-      <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+      <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-6">
         {/* Left side - Text content */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
@@ -34,7 +34,8 @@ export default function NotFound() {
           {/* Back to homepage Link */}
           <Link
             href="/"
-            className="group inline-flex items-center gap-1 text-base font-medium text-primary-500 hover:text-primary-400 transition-colors"
+            className="group inline-flex items-center gap-1 text-base font-medium transition-colors"
+            style={{ color: '#DB6251' }}
           >
             <ChevronRight className="w-4 h-4" />
             Back to homepage
