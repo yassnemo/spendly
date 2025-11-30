@@ -82,8 +82,8 @@ export const SpendingChart: React.FC = () => {
         <AreaChart data={last30Days} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="spendingGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#e86f5c" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="#e86f5c" stopOpacity={0} />
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
@@ -106,7 +106,7 @@ export const SpendingChart: React.FC = () => {
           <Area
             type="monotone"
             dataKey="amount"
-            stroke="#e86f5c"
+            stroke="#3b82f6"
             strokeWidth={2}
             fill="url(#spendingGradient)"
           />
@@ -133,6 +133,8 @@ export const CategoryPieChart: React.FC = () => {
       .sort((a, b) => b.value - a.value);
   }, [monthlyStats]);
 
+  const totalSpending = data.reduce((sum, item) => sum + item.value, 0);
+
   if (data.length === 0) {
     return (
       <div className="h-64 flex items-center justify-center text-neutral-500">
@@ -142,17 +144,18 @@ export const CategoryPieChart: React.FC = () => {
   }
 
   return (
-    <div className="h-64 flex items-center gap-4">
-      <div className="flex-1 h-full">
+    <div className="flex flex-col sm:flex-row items-center gap-4 min-h-[256px]">
+      {/* Pie Chart */}
+      <div className="w-full sm:flex-1 h-48 sm:h-64">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={50}
-              outerRadius={80}
-              paddingAngle={4}
+              innerRadius={45}
+              outerRadius={70}
+              paddingAngle={3}
               dataKey="value"
             >
               {data.map((entry, index) => (
@@ -163,13 +166,14 @@ export const CategoryPieChart: React.FC = () => {
               content={({ active, payload }) => {
                 if (!active || !payload?.length) return null;
                 const data = payload[0].payload;
+                const percentage = ((data.value / totalSpending) * 100).toFixed(1);
                 return (
                   <div className="bg-white dark:bg-neutral-800 p-3 rounded-xl shadow-lg border border-neutral-100 dark:border-neutral-700">
                     <p className="text-sm font-medium text-neutral-900 dark:text-white">
                       {data.name}
                     </p>
                     <p className="text-sm font-semibold" style={{ color: data.color }}>
-                      {formatCurrency(data.value, profile?.currency)}
+                      {formatCurrency(data.value, profile?.currency)} ({percentage}%)
                     </p>
                   </div>
                 );
@@ -179,19 +183,24 @@ export const CategoryPieChart: React.FC = () => {
         </ResponsiveContainer>
       </div>
 
-      {/* Legend */}
-      <div className="w-36 space-y-2">
-        {data.slice(0, 5).map((item) => (
-          <div key={item.name} className="flex items-center gap-2">
-            <div
-              className="w-3 h-3 rounded-full flex-shrink-0"
-              style={{ backgroundColor: item.color }}
-            />
-            <span className="text-xs text-neutral-600 dark:text-neutral-400 truncate">
-              {item.name}
-            </span>
-          </div>
-        ))}
+      {/* Legend - horizontal scroll on mobile, vertical on desktop */}
+      <div className="w-full sm:w-40 overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0">
+        <div className="flex sm:flex-col gap-3 sm:gap-2 min-w-max sm:min-w-0">
+          {data.slice(0, 6).map((item) => {
+            const percentage = ((item.value / totalSpending) * 100).toFixed(0);
+            return (
+              <div key={item.name} className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: item.color }}
+                />
+                <span className="text-xs text-neutral-600 dark:text-neutral-400 whitespace-nowrap">
+                  {item.name} <span className="text-neutral-400 dark:text-neutral-500">({percentage}%)</span>
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -261,8 +270,8 @@ export const MonthlyComparisonChart: React.FC = () => {
           <Bar dataKey="amount" fill="url(#barGradient)" radius={[8, 8, 0, 0]}>
             <defs>
               <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#a855f7" />
-                <stop offset="100%" stopColor="#e86f5c" />
+                <stop offset="0%" stopColor="#3b82f6" />
+                <stop offset="100%" stopColor="#6366f1" />
               </linearGradient>
             </defs>
           </Bar>
@@ -314,7 +323,7 @@ export const BudgetProgressChart: React.FC<BudgetProgressChartProps> = ({ data }
             width={75}
           />
           <Tooltip content={<CustomTooltip currency={profile?.currency} />} />
-          <Bar dataKey="spent" fill="#e86f5c" radius={[0, 4, 4, 0]} name="Spent" />
+          <Bar dataKey="spent" fill="#3b82f6" radius={[0, 4, 4, 0]} name="Spent" />
           <Bar dataKey="limit" fill="#e5e5e5" radius={[0, 4, 4, 0]} name="Budget" />
         </BarChart>
       </ResponsiveContainer>
