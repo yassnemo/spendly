@@ -657,7 +657,7 @@ export const useStore = create<AppState>()(
       },
     }),
     {
-      name: 'smart-budget-storage',
+      name: 'spendly-storage',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         theme: state.theme,

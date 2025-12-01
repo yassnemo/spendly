@@ -33,7 +33,7 @@ export const AIChat: React.FC<AIChatProps> = ({
     {
       id: '1',
       role: 'assistant',
-      content: "Hello! I'm your SmartBudget AI assistant. I can help you understand your spending patterns, suggest ways to save money, and answer questions about managing your finances. How can I help you today?",
+      content: "Hello! I'm your Spendly AI assistant. I can help you understand your spending patterns, suggest ways to save money, and answer questions about managing your finances. How can I help you today?",
       timestamp: new Date().toISOString(),
     },
   ]);
@@ -176,7 +176,7 @@ export const AIChat: React.FC<AIChatProps> = ({
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-white">SmartBudget AI</h3>
+            <h3 className="font-semibold text-white">Spendly AI</h3>
             <p className="text-xs text-white/70">Powered by Gemini</p>
           </div>
         </div>

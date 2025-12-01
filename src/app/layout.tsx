@@ -10,12 +10,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Spendly - Smart Budget Tracking',
+  title: 'Spendly - Smart Finance Tracking',
   description: 'Take control of your money. Track spending, set budgets, and reach your financial goals with AI-powered insights.',
   keywords: ['budget', 'finance', 'expense tracker', 'money management', 'AI insights'],
   authors: [{ name: 'Spendly' }],
   openGraph: {
-    title: 'Spendly - Smart Budget Tracking',
+    title: 'Spendly - Smart Finance Tracking',
     description: 'Take control of your money. Track spending, set budgets, and reach your financial goals with AI-powered insights.',
     type: 'website',
   },

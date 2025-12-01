@@ -113,7 +113,7 @@ export async function signInAsDemo(): Promise<AuthUser> {
   try {
     const result = await signInWithEmailAndPassword(
       auth,
-      'demo@smartbudget.app',
+      'demo@spendly.app',
       'demo123456'
     );
     return mapFirebaseUser(result.user);
@@ -121,7 +121,7 @@ export async function signInAsDemo(): Promise<AuthUser> {
     // If demo account doesn't exist, create it
     const result = await createUserWithEmailAndPassword(
       auth,
-      'demo@smartbudget.app',
+      'demo@spendly.app',
       'demo123456'
     );
     await updateProfile(result.user, { displayName: 'Demo User' });

@@ -1,4 +1,4 @@
-// Type definitions for the Smart Budget App
+// Type definitions for the Spendly App
 
 export interface Expense {
   id: string;

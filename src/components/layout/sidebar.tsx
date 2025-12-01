@@ -60,7 +60,7 @@ export const Sidebar: React.FC<{ className?: string }> = ({ className }) => {
             className="w-10 h-10 rounded-xl shadow-soft-md transition-transform duration-300 group-hover:scale-105"
           />
           <span className="text-xl font-bold text-surface-900 dark:text-white">
-            SmartBudget
+            Spendly
           </span>
         </Link>
       </div>

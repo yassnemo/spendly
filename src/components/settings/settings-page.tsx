@@ -238,11 +238,11 @@ export const SettingsPage: React.FC = () => {
         <SettingsItem
           icon={<HelpCircle className="w-5 h-5" />}
           title="Help & Support"
-          description="Get help using SmartBudget"
+          description="Get help using Spendly"
           onClick={() => window.open('https://github.com', '_blank')}
         />
         <div className="p-5 text-center">
-          <p className="text-sm text-surface-500">SmartBudget v1.0.0</p>
+          <p className="text-sm text-surface-500">Spendly v1.0.0</p>
           <p className="text-xs text-surface-400 mt-1">Built with care for better financial health</p>
         </div>
       </SettingsSection>

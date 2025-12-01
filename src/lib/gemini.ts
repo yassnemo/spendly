@@ -30,7 +30,7 @@ const safetySettings = [
 ];
 
 // System prompt for the budget assistant
-const SYSTEM_PROMPT = `You are SmartBudget AI, a friendly and knowledgeable personal finance assistant. Your role is to help users manage their finances better within the SmartBudget app.
+const SYSTEM_PROMPT = `You are Spendly AI, a friendly and knowledgeable personal finance assistant. Your role is to help users manage their finances better within the Spendly app.
 
 Key capabilities:
 - Analyze spending patterns and provide insights
@@ -144,7 +144,7 @@ export async function chatWithAssistant(
         },
         {
           role: 'model',
-          parts: [{ text: "I understand. I'm SmartBudget AI, ready to help you manage your finances effectively. How can I assist you today?" }],
+          parts: [{ text: "I understand. I'm Spendly AI, ready to help you manage your finances effectively. How can I assist you today?" }],
         },
         ...conversationHistory,
       ],

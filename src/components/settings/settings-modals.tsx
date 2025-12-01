@@ -228,7 +228,7 @@ export const DataExportModal: React.FC<DataExportModalProps> = ({ isOpen, onClos
       category: e.category,
       amount: -e.amount,
     }));
-    exportToCSV(data, `smartbudget-expenses-${new Date().toISOString().split('T')[0]}`);
+    exportToCSV(data, `spendly-expenses-${new Date().toISOString().split('T')[0]}`);
   };
 
   const handleExportJSON = () => {
@@ -246,7 +246,7 @@ export const DataExportModal: React.FC<DataExportModalProps> = ({ isOpen, onClos
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `smartbudget-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `spendly-backup-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };

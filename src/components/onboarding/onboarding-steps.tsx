@@ -21,7 +21,7 @@ export interface OnboardingStep {
 export const steps: OnboardingStep[] = [
   {
     id: 1,
-    title: 'Welcome to SmartBudget',
+    title: 'Welcome to Spendly',
     description: 'Your personal finance companion. Track expenses, set budgets, and get AI-powered insights.',
     icon: Wallet,
   },
