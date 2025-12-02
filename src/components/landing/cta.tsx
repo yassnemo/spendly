@@ -32,7 +32,7 @@ export function CTA({ onGetStarted }: CTAProps) {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-3xl md:text-4xl font-bold text-white tracking-tight"
+              className="text-3xl md:text-4xl font-bold text-white tracking-tight font-display"
             >
               Start your journey to financial freedom
             </motion.h2>

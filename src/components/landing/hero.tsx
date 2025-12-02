@@ -48,7 +48,7 @@ export function Hero({ onGetStarted }: HeroProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-3xl md:text-6xl lg:text-7xl font-bold text-surface-900 dark:text-white tracking-tight leading-[1.1]"
+            className="text-3xl md:text-6xl lg:text-7xl font-bold text-surface-900 dark:text-white tracking-tight leading-[1.1] font-display"
           >
             Take control of
             <br />

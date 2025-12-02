@@ -63,7 +63,7 @@ export function Features() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold text-surface-900 dark:text-white tracking-tight"
+            className="text-3xl md:text-4xl font-bold text-surface-900 dark:text-white tracking-tight font-display"
           >
             Everything you need to manage your finances
           </motion.h2>
