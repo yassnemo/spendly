@@ -15,8 +15,15 @@ import {
   Zap,
   HelpCircle,
   Eye,
+  Cloud,
+  CloudOff,
+  Mail,
+  CheckCircle,
+  AlertCircle,
+  UserX,
 } from 'lucide-react';
 import { useStore } from '@/store';
+import { useAuth } from '@/components/auth/auth-provider';
 import { Button, Avatar, Switch, Select, Divider } from '@/components/ui';
 import { ConfirmDialog } from '@/components/ui/modal';
 import { CURRENCIES } from '@/lib/constants';
@@ -28,15 +35,18 @@ import {
   APIKeysModal, 
   DataExportModal 
 } from './settings-modals';
+import { isSyncEnabled, setSyncEnabled, syncData, getLastSyncTime, setLastSyncTime } from '@/lib/sync';
 
 // Main Settings Page
 export const SettingsPage: React.FC = () => {
   const profile = useStore((state) => state.profile);
   const setProfile = useStore((state) => state.setProfile);
+  const { user, sendVerificationEmail, deleteAccount } = useAuth();
 
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showCurrencySelector, setShowCurrencySelector] = useState(false);
   const [showClearDataConfirm, setShowClearDataConfirm] = useState(false);
+  const [showDeleteAccountConfirm, setShowDeleteAccountConfirm] = useState(false);
   const [showAPIKeys, setShowAPIKeys] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
@@ -45,12 +55,62 @@ export const SettingsPage: React.FC = () => {
   const [showAnimations, setShowAnimations] = useState(true);
   const [budgetAlerts, setBudgetAlerts] = useState(true);
   const [weeklyReports, setWeeklyReports] = useState(false);
+  const [cloudSync, setCloudSync] = useState(() => isSyncEnabled());
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSync, setLastSync] = useState<Date | null>(() => getLastSyncTime());
 
   const handleClearData = () => {
     if (typeof window !== 'undefined') {
       indexedDB.deleteDatabase('smart_budget_db');
       localStorage.clear();
       window.location.reload();
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      await deleteAccount();
+      if (typeof window !== 'undefined') {
+        indexedDB.deleteDatabase('smart_budget_db');
+        localStorage.clear();
+        window.location.href = '/';
+      }
+    } catch (error) {
+      console.error('Failed to delete account:', error);
+    }
+  };
+
+  const handleSendVerification = async () => {
+    try {
+      await sendVerificationEmail();
+      setVerificationSent(true);
+      setTimeout(() => setVerificationSent(false), 5000);
+    } catch (error) {
+      console.error('Failed to send verification email:', error);
+    }
+  };
+
+  const handleCloudSyncToggle = async (enabled: boolean) => {
+    setCloudSync(enabled);
+    setSyncEnabled(enabled);
+    
+    if (enabled && user?.id) {
+      setIsSyncing(true);
+      try {
+        const result = await syncData(user.id);
+        if (result.success) {
+          setLastSyncTime();
+          setLastSync(new Date());
+        } else {
+          console.error('Sync failed:', result.error);
+          // Revert toggle if sync fails
+          setCloudSync(false);
+          setSyncEnabled(false);
+        }
+      } finally {
+        setIsSyncing(false);
+      }
     }
   };
 
@@ -91,6 +151,38 @@ export const SettingsPage: React.FC = () => {
             Edit Profile
           </Button>
         </div>
+      </SettingsSection>
+
+      {/* Account & Security */}
+      <SettingsSection title="Account & Security" description="Manage your account security">
+        <SettingsItem
+          icon={user?.emailVerified ? <CheckCircle className="w-5 h-5" /> : <Mail className="w-5 h-5" />}
+          iconColor={user?.emailVerified 
+            ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
+            : "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"
+          }
+          title="Email Verification"
+          description={user?.emailVerified ? "Your email is verified" : "Verify your email address"}
+          badge={user?.emailVerified ? "Verified" : "Not Verified"}
+          badgeVariant={user?.emailVerified ? "success" : "warning"}
+          action={!user?.emailVerified && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleSendVerification}
+              disabled={verificationSent}
+            >
+              {verificationSent ? "Email Sent!" : "Send Link"}
+            </Button>
+          )}
+        />
+        <SettingsItem
+          icon={<UserX className="w-5 h-5" />}
+          iconColor="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+          title="Delete Account"
+          description="Permanently delete your account and data"
+          onClick={() => setShowDeleteAccountConfirm(true)}
+        />
       </SettingsSection>
 
       {/* Appearance */}
@@ -204,6 +296,24 @@ export const SettingsPage: React.FC = () => {
       {/* Data */}
       <SettingsSection title="Data" description="Manage your financial data">
         <SettingsItem
+          icon={cloudSync ? <Cloud className="w-5 h-5" /> : <CloudOff className="w-5 h-5" />}
+          iconColor={cloudSync 
+            ? "bg-accent-100 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400"
+            : "bg-surface-100 dark:bg-surface-900/30 text-surface-600 dark:text-surface-400"
+          }
+          title="Cloud Sync"
+          description={
+            isSyncing 
+              ? "Syncing..." 
+              : lastSync 
+                ? `Last synced: ${lastSync.toLocaleDateString()} ${lastSync.toLocaleTimeString()}`
+                : "Sync data across devices"
+          }
+          badge={cloudSync ? (isSyncing ? "Syncing" : "Enabled") : "Disabled"}
+          badgeVariant={cloudSync ? (isSyncing ? "warning" : "success") : "default"}
+          action={<Switch checked={cloudSync} onChange={handleCloudSyncToggle} disabled={isSyncing} />}
+        />
+        <SettingsItem
           icon={<Download className="w-5 h-5" />}
           iconColor="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
           title="Export Data"
@@ -277,6 +387,16 @@ export const SettingsPage: React.FC = () => {
         title="Clear All Data?"
         description="This will permanently delete all your expenses, budgets, goals, and settings. This action cannot be undone."
         confirmText="Delete Everything"
+        variant="danger"
+      />
+
+      <ConfirmDialog
+        isOpen={showDeleteAccountConfirm}
+        onClose={() => setShowDeleteAccountConfirm(false)}
+        onConfirm={handleDeleteAccount}
+        title="Delete Account?"
+        description="This will permanently delete your account and all associated data. You will be logged out immediately. This action cannot be undone."
+        confirmText="Delete Account"
         variant="danger"
       />
     </div>
