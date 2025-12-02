@@ -33,13 +33,25 @@ export const OnboardingFlow: React.FC = () => {
   const [currency, setCurrency] = useState('USD');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // If user is already logged in, skip auth step
+  // If user is already logged in, check if they have completed onboarding before
   useEffect(() => {
-    if (user && currentStep === 2) {
+    if (user) {
+      // Set name from user profile
       setName(user.displayName || '');
-      setCurrentStep(3);
+      
+      // If on auth step, move to next
+      if (currentStep === 2) {
+        // Check if returning user with existing profile
+        const profile = useStore.getState().profile;
+        if (profile?.onboardingCompleted && profile?.monthlyIncome > 0) {
+          // Returning user - complete onboarding immediately
+          completeOnboarding();
+        } else {
+          setCurrentStep(3);
+        }
+      }
     }
-  }, [user, currentStep]);
+  }, [user, currentStep, completeOnboarding]);
 
   const handleNext = () => {
     if (currentStep < steps.length) {
