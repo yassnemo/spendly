@@ -7,9 +7,11 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
+  sendEmailVerification,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   updateProfile,
+  deleteUser,
   User,
 } from 'firebase/auth';
 
@@ -36,6 +38,7 @@ export interface AuthUser {
   displayName: string | null;
   photoURL: string | null;
   provider: 'google' | 'github' | 'email' | 'demo';
+  emailVerified?: boolean;
 }
 
 function mapFirebaseUser(user: User): AuthUser {
@@ -51,6 +54,7 @@ function mapFirebaseUser(user: User): AuthUser {
     displayName: user.displayName,
     photoURL: user.photoURL,
     provider,
+    emailVerified: user.emailVerified,
   };
 }
 
@@ -83,6 +87,9 @@ export async function signUpWithEmail(
     await updateProfile(result.user, { displayName });
   }
   
+  // Send verification email
+  await sendEmailVerification(result.user);
+  
   return mapFirebaseUser(result.user);
 }
 
@@ -92,6 +99,22 @@ export async function signOut(): Promise<void> {
 
 export async function resetPassword(email: string): Promise<void> {
   await sendPasswordResetEmail(auth, email);
+}
+
+// Send email verification
+export async function sendVerificationEmail(): Promise<void> {
+  const user = auth.currentUser;
+  if (user && !user.emailVerified) {
+    await sendEmailVerification(user);
+  }
+}
+
+// Delete user account
+export async function deleteAccount(): Promise<void> {
+  const user = auth.currentUser;
+  if (user) {
+    await deleteUser(user);
+  }
 }
 
 export function onAuthStateChange(

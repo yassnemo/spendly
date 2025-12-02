@@ -10,6 +10,7 @@ export interface AuthUser {
   displayName: string | null;
   photoURL: string | null;
   provider: 'google' | 'github' | 'email' | 'demo';
+  emailVerified?: boolean;
 }
 
 const AUTH_STORAGE_KEY = 'smart_budget_auth';
@@ -162,6 +163,22 @@ export async function resetPassword(email: string): Promise<void> {
   
   // In a real app, this would send a password reset email
   console.log('Password reset email sent to:', email);
+}
+
+// Send email verification (mock)
+export async function sendVerificationEmail(): Promise<void> {
+  await new Promise(resolve => setTimeout(resolve, 300));
+  console.log('Verification email sent');
+}
+
+// Delete user account (mock)
+export async function deleteAccount(): Promise<void> {
+  await new Promise(resolve => setTimeout(resolve, 300));
+  setCurrentUser(null);
+  // Clear all data
+  if (typeof window !== 'undefined') {
+    localStorage.clear();
+  }
 }
 
 // Subscribe to auth state changes
