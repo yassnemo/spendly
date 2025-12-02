@@ -8,6 +8,7 @@ import {
   Chrome,
   Github,
   Zap,
+  ArrowLeft,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/auth-provider';
 import { Button, Input } from '@/components/ui';
@@ -18,24 +19,32 @@ export const AuthStep: React.FC<{
   onSkip: () => void;
 }> = ({ onSuccess, onSkip }) => {
   const auth = useAuth();
-  const [isLogin, setIsLogin] = useState(true);
+  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleEmailAuth = async () => {
-    if (!email || !password) {
+    if (!email || (mode !== 'forgot' && !password)) {
       setError('Please fill in all fields');
       return;
     }
 
     setIsLoading(true);
     setError('');
+    setSuccessMessage('');
 
     try {
-      if (isLogin) {
+      if (mode === 'forgot') {
+        await auth.resetPassword(email);
+        setSuccessMessage('Password reset email sent! Check your inbox.');
+        return;
+      }
+      
+      if (mode === 'login') {
         await auth.signInWithEmail(email, password);
         onSuccess(email.split('@')[0]);
       } else {
@@ -93,6 +102,51 @@ export const AuthStep: React.FC<{
     }
   };
 
+  // Forgot Password Mode
+  if (mode === 'forgot') {
+    return (
+      <div className="w-full max-w-sm space-y-4">
+        <button
+          onClick={() => { setMode('login'); setError(''); setSuccessMessage(''); }}
+          className="flex items-center gap-2 text-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to sign in
+        </button>
+
+        <div className="text-center mb-4">
+          <h3 className="text-lg font-semibold text-surface-900 dark:text-white">Reset Password</h3>
+          <p className="text-sm text-surface-500 mt-1">Enter your email to receive a reset link</p>
+        </div>
+
+        <Input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email address"
+          leftElement={<Mail className="w-4 h-4 text-surface-400" />}
+          disabled={isLoading}
+        />
+
+        {error && (
+          <p className="text-sm text-danger-500 text-center">{error}</p>
+        )}
+
+        {successMessage && (
+          <p className="text-sm text-green-500 text-center">{successMessage}</p>
+        )}
+
+        <Button
+          className="w-full"
+          onClick={handleEmailAuth}
+          isLoading={isLoading}
+        >
+          Send Reset Link
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-sm space-y-4">
       {/* Demo Button for quick start */}
@@ -142,7 +196,7 @@ export const AuthStep: React.FC<{
 
       {/* Email/Password Form */}
       <div className="space-y-3">
-        {!isLogin && (
+        {mode === 'signup' && (
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -169,6 +223,16 @@ export const AuthStep: React.FC<{
         />
       </div>
 
+      {mode === 'login' && (
+        <button
+          onClick={() => { setMode('forgot'); setError(''); }}
+          className="text-sm text-primary-500 hover:underline"
+          disabled={isLoading}
+        >
+          Forgot password?
+        </button>
+      )}
+
       {error && (
         <p className="text-sm text-danger-500 text-center">{error}</p>
       )}
@@ -178,17 +242,17 @@ export const AuthStep: React.FC<{
         onClick={handleEmailAuth}
         isLoading={isLoading}
       >
-        {isLogin ? 'Sign In' : 'Create Account'}
+        {mode === 'login' ? 'Sign In' : 'Create Account'}
       </Button>
 
       <p className="text-center text-sm text-surface-500">
-        {isLogin ? "Don't have an account? " : 'Already have an account? '}
+        {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
         <button
-          onClick={() => setIsLogin(!isLogin)}
+          onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
           className="text-primary-500 font-medium hover:underline"
           disabled={isLoading}
         >
-          {isLogin ? 'Sign Up' : 'Sign In'}
+          {mode === 'login' ? 'Sign Up' : 'Sign In'}
         </button>
       </p>
 
