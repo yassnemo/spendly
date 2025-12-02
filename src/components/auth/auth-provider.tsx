@@ -10,6 +10,8 @@ import {
   signOut,
   resetPassword,
   signInAsDemo,
+  sendVerificationEmail,
+  deleteAccount,
   AuthUser,
 } from '@/lib/firebase';
 
@@ -24,6 +26,8 @@ interface AuthContextType {
   signInAsDemo: () => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  sendVerificationEmail: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
   error: string | null;
   clearError: () => void;
 }
@@ -124,6 +128,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const handleSendVerificationEmail = async () => {
+    setError(null);
+    try {
+      await sendVerificationEmail();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setError(null);
+    setIsLoading(true);
+    try {
+      await deleteAccount();
+      setUser(null);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -137,6 +163,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signInAsDemo: handleSignInAsDemo,
         signOut: handleSignOut,
         resetPassword: handleResetPassword,
+        sendVerificationEmail: handleSendVerificationEmail,
+        deleteAccount: handleDeleteAccount,
         error,
         clearError,
       }}
