@@ -9,17 +9,17 @@
 - [x] Goals and savings tracker
 
 ## Design & Branding
-- [ ] Create professional app logo
+- [x] Create professional app logo
 - [ ] Refine color palette for better contrast
 - [ ] Add app icon for mobile/PWA
 - [ ] Create loading skeleton screens
 
 ## Authentication & Data
-- [ ] Connect Neon database for cloud sync
-- [ ] Add password reset flow
-- [ ] Add email verification
-- [ ] Enable data sync across devices
-- [ ] Add account deletion option
+- [x] Connect Neon database for cloud sync
+- [x] Add password reset flow
+- [x] Add email verification
+- [x] Enable data sync across devices
+- [x] Add account deletion option
 
 ## Core Features
 - [ ] Recurring expenses (subscriptions, rent, bills)
