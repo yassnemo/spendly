@@ -78,7 +78,58 @@ export function Features() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Mobile: Horizontal scroll */}
+        <div className="md:hidden -mx-6 px-6">
+          <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
+                className="flex-shrink-0 w-[280px] snap-center p-5 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-100 dark:border-surface-800"
+              >
+                <div className="flex items-start gap-4">
+                  <div
+                    className={cn(
+                      'w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0',
+                      feature.color === 'primary' && 'bg-primary-100 dark:bg-primary-900/30',
+                      feature.color === 'secondary' && 'bg-secondary-100 dark:bg-secondary-900/30',
+                      feature.color === 'accent' && 'bg-accent-100 dark:bg-accent-900/30'
+                    )}
+                  >
+                    <feature.icon
+                      className={cn(
+                        'w-5 h-5',
+                        feature.color === 'primary' && 'text-primary-600 dark:text-primary-400',
+                        feature.color === 'secondary' && 'text-secondary-600 dark:text-secondary-400',
+                        feature.color === 'accent' && 'text-accent-600 dark:text-accent-400'
+                      )}
+                    />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-surface-900 dark:text-white mb-1">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          {/* Scroll indicator */}
+          <div className="flex justify-center gap-1 mt-2">
+            {features.map((_, i) => (
+              <div key={i} className="w-1.5 h-1.5 rounded-full bg-surface-300 dark:bg-surface-700" />
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop: Grid layout */}
+        <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
