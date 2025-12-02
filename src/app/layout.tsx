@@ -1,12 +1,19 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Montserrat } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 import { Providers } from '@/components/providers';
 
-const inter = Inter({
+const montserrat = Montserrat({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-montserrat',
+});
+
+const bagnard = localFont({
+  src: '../../public/fonts/BagnardSans.otf',
+  variable: '--font-bagnard',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -37,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" className={`${montserrat.variable} ${bagnard.variable}`} suppressHydrationWarning>
       <body className="min-h-screen antialiased font-sans">
         <Providers>{children}</Providers>
       </body>

@@ -65,8 +65,8 @@ module.exports = {
       },
       fontFamily: {
         sans: [
-          'var(--font-inter)',
-          'Inter',
+          'var(--font-montserrat)',
+          'Montserrat',
           '-apple-system',
           'BlinkMacSystemFont',
           'Segoe UI',
@@ -75,11 +75,10 @@ module.exports = {
           'sans-serif',
         ],
         display: [
-          'var(--font-inter)',
-          'Inter',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'sans-serif',
+          'var(--font-bagnard)',
+          'Bagnard Sans',
+          'Georgia',
+          'serif',
         ],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
