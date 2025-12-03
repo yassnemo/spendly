@@ -125,10 +125,7 @@ export function Hero({ onGetStarted }: HeroProps) {
               </div>
 
               {/* App preview content */}
-              <div
-                className="relative p-6 lg:p-8 bg-surface-50 dark:bg-surface-950 overflow-hidden"
-                style={{ maxHeight: '600px' }}
-              >
+              <div className="relative p-6 lg:p-8 bg-surface-50 dark:bg-surface-950">
                 <DashboardPreview />
               </div>
             </div>
