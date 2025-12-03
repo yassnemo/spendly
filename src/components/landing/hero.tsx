@@ -4,7 +4,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { BackgroundRippleEffect } from '@/components/ui/background-ripple-effect';
-import GradualBlur from '@/components/ui/gradual-blur';
 import { DashboardPreview } from './dashboard-preview';
 
 interface HeroProps {
@@ -131,16 +130,6 @@ export function Hero({ onGetStarted }: HeroProps) {
                 style={{ maxHeight: '600px' }}
               >
                 <DashboardPreview />
-                <GradualBlur
-                  target="parent"
-                  position="bottom"
-                  height="8rem"
-                  strength={3}
-                  divCount={6}
-                  curve="bezier"
-                  exponential={true}
-                  opacity={1}
-                />
               </div>
             </div>
           </div>

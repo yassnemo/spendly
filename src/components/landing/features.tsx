@@ -4,7 +4,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Target, Sparkles, Shield, Zap, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import GradualBlur from '@/components/ui/gradual-blur';
 
 const features = [
   {
@@ -48,15 +47,6 @@ const features = [
 export function Features() {
   return (
     <section id="features" className="relative py-20 md:py-32 bg-white dark:bg-surface-950 overflow-hidden">
-      <GradualBlur
-        target="parent"
-        position="top"
-        height="6rem"
-        strength={2}
-        divCount={5}
-        curve="ease-out"
-        opacity={0.8}
-      />
       <div className="mx-auto max-w-6xl px-6">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <motion.h2
