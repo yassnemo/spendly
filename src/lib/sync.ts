@@ -1,9 +1,10 @@
 /**
  * Cloud Sync Service
  * Handles synchronization between local IndexedDB storage and Neon cloud database
+ * 
+ * Note: Cloud sync requires server-side API routes as DATABASE_URL is not available on client
  */
 
-import * as neon from './neon';
 import { expensesDB, budgetsDB, goalsDB, incomesDB, profileDB } from './db';
 import type { Expense, Budget, SavingsGoal, Income, UserProfile } from '@/types';
 
@@ -19,15 +20,35 @@ export interface SyncResult {
 }
 
 /**
+ * Check if we're running on the server side where database is available
+ */
+function isServerSide(): boolean {
+  return typeof window === 'undefined';
+}
+
+/**
  * Push local data to cloud database
+ * Note: This should be called through an API route, not directly from client
  */
 export async function pushToCloud(userId: string): Promise<SyncResult> {
+  // Cloud sync is not available on client side
+  if (!isServerSide()) {
+    return {
+      success: false,
+      error: 'Cloud sync is only available through API routes. This feature is coming soon.',
+      synced: { expenses: 0, budgets: 0, goals: 0, incomes: 0 },
+    };
+  }
+
   const result: SyncResult = {
     success: true,
     synced: { expenses: 0, budgets: 0, goals: 0, incomes: 0 },
   };
 
   try {
+    // Dynamic import to avoid loading neon on client side
+    const neon = await import('./neon');
+    
     // Sync expenses
     const expenses = await expensesDB.getAll();
     for (const expense of expenses) {
@@ -82,14 +103,27 @@ export async function pushToCloud(userId: string): Promise<SyncResult> {
 
 /**
  * Pull data from cloud database to local storage
+ * Note: This should be called through an API route, not directly from client
  */
 export async function pullFromCloud(userId: string): Promise<SyncResult> {
+  // Cloud sync is not available on client side
+  if (!isServerSide()) {
+    return {
+      success: false,
+      error: 'Cloud sync is only available through API routes. This feature is coming soon.',
+      synced: { expenses: 0, budgets: 0, goals: 0, incomes: 0 },
+    };
+  }
+
   const result: SyncResult = {
     success: true,
     synced: { expenses: 0, budgets: 0, goals: 0, incomes: 0 },
   };
 
   try {
+    // Dynamic import to avoid loading neon on client side
+    const neon = await import('./neon');
+    
     // Clear local data first
     await clearLocalData();
 
@@ -154,6 +188,15 @@ export async function pullFromCloud(userId: string): Promise<SyncResult> {
  * Full two-way sync - merges local and cloud data
  */
 export async function syncData(userId: string): Promise<SyncResult> {
+  // Cloud sync is not available on client side
+  if (!isServerSide()) {
+    return {
+      success: false,
+      error: 'Cloud sync is only available through API routes. This feature is coming soon.',
+      synced: { expenses: 0, budgets: 0, goals: 0, incomes: 0 },
+    };
+  }
+
   try {
     // First push local to cloud
     const pushResult = await pushToCloud(userId);
