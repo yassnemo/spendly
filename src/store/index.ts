@@ -116,6 +116,14 @@ export const useStore = create<AppState>()(
               profileDB.get(),
             ]);
 
+          // Check if user was previously onboarded (from localStorage or profile)
+          const currentOnboarded = get().isOnboarded;
+          const profileOnboarded = profile?.onboardingCompleted || false;
+          
+          // User is onboarded if either localStorage says so OR profile says so
+          // This prevents losing onboarding state on page refresh
+          const isOnboarded = currentOnboarded || profileOnboarded;
+
           set({
             expenses,
             incomes,
@@ -123,7 +131,7 @@ export const useStore = create<AppState>()(
             goals,
             insights,
             profile: profile || null,
-            isOnboarded: profile?.onboardingCompleted || false,
+            isOnboarded,
             isLoading: false,
           });
 
@@ -664,6 +672,12 @@ export const useStore = create<AppState>()(
         isOnboarded: state.isOnboarded,
         currentMonth: state.currentMonth,
       }),
+      // Log when hydration completes for debugging
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          console.log('[Store] Hydrated from localStorage, isOnboarded:', state.isOnboarded);
+        }
+      },
     }
   )
 );

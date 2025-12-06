@@ -33,7 +33,16 @@ export const OnboardingFlow: React.FC = () => {
   const [currency, setCurrency] = useState('USD');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // If user is already logged in, check if they have completed onboarding before
+  // Check for returning user with existing profile on mount
+  useEffect(() => {
+    const profile = useStore.getState().profile;
+    if (profile?.onboardingCompleted && profile?.monthlyIncome > 0) {
+      // Returning user with completed profile - skip onboarding
+      completeOnboarding();
+    }
+  }, [completeOnboarding]);
+
+  // If user is already logged in, handle auth step progression
   useEffect(() => {
     if (user) {
       // Set name from user profile
@@ -47,6 +56,13 @@ export const OnboardingFlow: React.FC = () => {
           // Returning user - complete onboarding immediately
           completeOnboarding();
         } else {
+          // Pre-fill from existing profile if available
+          if (profile?.monthlyIncome) {
+            setIncome(profile.monthlyIncome.toString());
+          }
+          if (profile?.currency) {
+            setCurrency(profile.currency);
+          }
           setCurrentStep(3);
         }
       }
