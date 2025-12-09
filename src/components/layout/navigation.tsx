@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Sparkles } from 'lucide-react';
 import { useStore } from '@/store';
+import { useAuth } from '@/components/auth/auth-provider';
 import { Button } from '@/components/ui';
 import { Sidebar } from './sidebar';
 import { MobileNav, MobileHeader } from './mobile-nav';
@@ -24,10 +25,11 @@ export const Layout: React.FC<LayoutProps> = ({
 }) => {
   const isOnboarded = useStore((state) => state.isOnboarded);
   const isLoading = useStore((state) => state.isLoading);
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const router = useRouter();
 
   // Show loading state
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-950">
         <div className="space-y-4 text-center">
@@ -38,7 +40,36 @@ export const Layout: React.FC<LayoutProps> = ({
     );
   }
 
-  // Show auth required page if not onboarded
+  // Require authentication - redirect to home if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-950 p-4">
+        <div className="max-w-md w-full text-center space-y-6">
+          <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+            <Sparkles className="w-10 h-10 text-white" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold text-surface-900 dark:text-white">
+              Sign In Required
+            </h1>
+            <p className="text-surface-600 dark:text-surface-400">
+              Please sign in to access your dashboard and manage your finances.
+            </p>
+          </div>
+          <div className="space-y-3">
+            <Button
+              onClick={() => router.push('/')}
+              className="w-full btn-primary btn-lg"
+            >
+              Sign In
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show onboarding required if authenticated but not onboarded
   if (!isOnboarded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-950 p-4">
@@ -48,10 +79,10 @@ export const Layout: React.FC<LayoutProps> = ({
           </div>
           <div className="space-y-2">
             <h1 className="text-2xl font-bold text-surface-900 dark:text-white">
-              Welcome to Spendly
+              Complete Your Setup
             </h1>
             <p className="text-surface-600 dark:text-surface-400">
-              Create an account to start tracking your finances, set budgets, and get personalized insights.
+              Let&apos;s finish setting up your account to start tracking your finances.
             </p>
           </div>
           <div className="space-y-3">
@@ -59,17 +90,8 @@ export const Layout: React.FC<LayoutProps> = ({
               onClick={() => router.push('/')}
               className="w-full btn-primary btn-lg"
             >
-              Get Started
+              Continue Setup
             </Button>
-            <p className="text-sm text-surface-500">
-              Already have an account?{' '}
-              <button
-                onClick={() => router.push('/')}
-                className="text-primary-600 dark:text-primary-400 font-medium hover:underline"
-              >
-                Sign in
-              </button>
-            </p>
           </div>
         </div>
       </div>

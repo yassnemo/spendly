@@ -7,7 +7,6 @@ import {
   Lock,
   Chrome,
   Github,
-  Zap,
   ArrowLeft,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/auth-provider';
@@ -16,8 +15,7 @@ import { Button, Input } from '@/components/ui';
 // Auth Step Component
 export const AuthStep: React.FC<{
   onSuccess: (name: string) => void;
-  onSkip: () => void;
-}> = ({ onSuccess, onSkip }) => {
+}> = ({ onSuccess }) => {
   const auth = useAuth();
   const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
   const [email, setEmail] = useState('');
@@ -89,18 +87,7 @@ export const AuthStep: React.FC<{
     }
   };
 
-  const handleDemoAuth = async () => {
-    setIsLoading(true);
-    setError('');
-    try {
-      await auth.signInAsDemo();
-      onSuccess('Demo User');
-    } catch (err: any) {
-      setError(err.message || 'Demo sign-in failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
 
   // Forgot Password Mode
   if (mode === 'forgot') {
@@ -149,23 +136,6 @@ export const AuthStep: React.FC<{
 
   return (
     <div className="w-full max-w-sm space-y-4">
-      {/* Demo Button for quick start */}
-      <Button
-        variant="primary"
-        className="w-full"
-        onClick={handleDemoAuth}
-        disabled={isLoading}
-        leftIcon={<Zap className="w-5 h-5" />}
-      >
-        Quick Start (Demo)
-      </Button>
-
-      <div className="flex items-center gap-4">
-        <div className="flex-1 h-px bg-surface-200 dark:bg-surface-700" />
-        <span className="text-xs text-surface-400">or sign in</span>
-        <div className="flex-1 h-px bg-surface-200 dark:bg-surface-700" />
-      </div>
-
       {/* Social Login Buttons */}
       <div className="space-y-3">
         <Button
@@ -255,14 +225,6 @@ export const AuthStep: React.FC<{
           {mode === 'login' ? 'Sign Up' : 'Sign In'}
         </button>
       </p>
-
-      <button
-        onClick={onSkip}
-        className="w-full text-center text-sm text-surface-400 hover:text-surface-600 transition-colors"
-        disabled={isLoading}
-      >
-        Skip for now
-      </button>
     </div>
   );
 };

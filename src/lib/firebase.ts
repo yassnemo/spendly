@@ -37,7 +37,7 @@ export interface AuthUser {
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
-  provider: 'google' | 'github' | 'email' | 'demo';
+  provider: 'google' | 'github' | 'email';
   emailVerified?: boolean;
 }
 
@@ -128,28 +128,6 @@ export function onAuthStateChange(
 export function getCurrentUser(): AuthUser | null {
   const user = auth.currentUser;
   return user ? mapFirebaseUser(user) : null;
-}
-
-// Demo sign in for development
-export async function signInAsDemo(): Promise<AuthUser> {
-  // Use a test account or create one
-  try {
-    const result = await signInWithEmailAndPassword(
-      auth,
-      'demo@spendly.app',
-      'demo123456'
-    );
-    return mapFirebaseUser(result.user);
-  } catch {
-    // If demo account doesn't exist, create it
-    const result = await createUserWithEmailAndPassword(
-      auth,
-      'demo@spendly.app',
-      'demo123456'
-    );
-    await updateProfile(result.user, { displayName: 'Demo User' });
-    return mapFirebaseUser(result.user);
-  }
 }
 
 export { auth };

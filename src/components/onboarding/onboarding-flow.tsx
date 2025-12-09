@@ -86,10 +86,6 @@ export const OnboardingFlow: React.FC = () => {
     setCurrentStep(3);
   };
 
-  const handleAuthSkip = () => {
-    setCurrentStep(3);
-  };
-
   const handleComplete = async () => {
     setIsSubmitting(true);
     try {
@@ -150,7 +146,7 @@ export const OnboardingFlow: React.FC = () => {
       case 2:
         return (
           <StepContent step={step}>
-            <AuthStep onSuccess={handleAuthSuccess} onSkip={handleAuthSkip} />
+            <AuthStep onSuccess={handleAuthSuccess} />
           </StepContent>
         );
 

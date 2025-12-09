@@ -3,8 +3,16 @@
 
 import { Expense, Income, Budget, SavingsGoal, UserProfile, AIInsight } from '@/types';
 
-const DB_NAME = 'smart_budget_db';
+const DB_NAME_PREFIX = 'smart_budget_db';
 const DB_VERSION = 1;
+
+// Get user-specific database name
+function getDbName(userId?: string): string {
+  if (userId) {
+    return `${DB_NAME_PREFIX}_${userId}`;
+  }
+  return DB_NAME_PREFIX;
+}
 
 type StoreName = 'expenses' | 'incomes' | 'budgets' | 'goals' | 'profile' | 'insights';
 
@@ -56,12 +64,22 @@ const stores: StoreConfig[] = [
 
 class Database {
   private db: IDBDatabase | null = null;
+  private currentUserId: string | null = null;
 
-  async init(): Promise<void> {
+  async init(userId?: string): Promise<void> {
     if (typeof window === 'undefined') return;
 
+    // If switching users, close the old database
+    if (this.db && this.currentUserId !== userId) {
+      this.db.close();
+      this.db = null;
+    }
+
+    this.currentUserId = userId || null;
+    const dbName = getDbName(userId);
+
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
+      const request = indexedDB.open(dbName, DB_VERSION);
 
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {

@@ -4,32 +4,43 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useStore } from '@/store';
 import { ThemeProvider } from '@/components/theme-provider';
-import { AuthProvider } from '@/components/auth/auth-provider';
+import { AuthProvider, useAuth } from '@/components/auth/auth-provider';
 import { FloatingChat } from '@/components/chat/floating-chat';
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = useState(false);
+// Inner component that has access to auth context
+function AppInitializer({ children }: { children: React.ReactNode }) {
   const [initError, setInitError] = useState<string | null>(null);
   const initialize = useStore((state) => state.initialize);
   const isOnboarded = useStore((state) => state.isOnboarded);
+  const isLoading = useStore((state) => state.isLoading);
+  const currentUserId = useStore((state) => state.currentUserId);
   const pathname = usePathname();
+  const { user, isLoading: authLoading } = useAuth();
 
+  // Initialize store when user changes
   useEffect(() => {
-    setMounted(true);
-    
     const initApp = async () => {
-      try {
-        await initialize();
-      } catch (error) {
-        console.error('Failed to initialize app:', error);
-        setInitError(error instanceof Error ? error.message : 'Unknown error');
+      // Wait for auth to finish loading
+      if (authLoading) return;
+      
+      // Get user ID (undefined if not logged in)
+      const userId = user?.id;
+      
+      // Only reinitialize if user changed
+      if (userId !== currentUserId) {
+        try {
+          await initialize(userId);
+        } catch (error) {
+          console.error('Failed to initialize app:', error);
+          setInitError(error instanceof Error ? error.message : 'Unknown error');
+        }
       }
     };
-    
-    initApp();
-  }, [initialize]);
 
-  if (!mounted) {
+    initApp();
+  }, [user, authLoading, initialize, currentUserId]);
+
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen bg-surface-50 dark:bg-surface-950 flex items-center justify-center">
         <div className="w-10 h-10 rounded-xl bg-primary-500 animate-pulse" />
@@ -64,10 +75,34 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const showFloatingChat = isOnboarded && pathname !== '/' && !pathname?.startsWith('/auth');
 
   return (
+    <>
+      {children}
+      {showFloatingChat && <FloatingChat />}
+    </>
+  );
+}
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-surface-50 dark:bg-surface-950 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-xl bg-primary-500 animate-pulse" />
+      </div>
+    );
+  }
+
+  return (
     <AuthProvider>
       <ThemeProvider>
-        {children}
-        {showFloatingChat && <FloatingChat />}
+        <AppInitializer>
+          {children}
+        </AppInitializer>
       </ThemeProvider>
     </AuthProvider>
   );

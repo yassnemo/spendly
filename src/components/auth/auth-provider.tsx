@@ -9,7 +9,6 @@ import {
   signUpWithEmail,
   signOut,
   resetPassword,
-  signInAsDemo,
   sendVerificationEmail,
   deleteAccount,
   AuthUser,
@@ -23,7 +22,6 @@ interface AuthContextType {
   signInWithGithub: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string, name: string) => Promise<void>;
-  signInAsDemo: () => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   sendVerificationEmail: () => Promise<void>;
@@ -107,18 +105,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const handleSignInAsDemo = async () => {
-    setError(null);
-    setIsLoading(true);
-    try {
-      await signInAsDemo();
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleResetPassword = async (email: string) => {
     setError(null);
     try {
@@ -160,7 +146,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signInWithGithub: handleSignInWithGithub,
         signInWithEmail: handleSignInWithEmail,
         signUpWithEmail: handleSignUpWithEmail,
-        signInAsDemo: handleSignInAsDemo,
         signOut: handleSignOut,
         resetPassword: handleResetPassword,
         sendVerificationEmail: handleSendVerificationEmail,
