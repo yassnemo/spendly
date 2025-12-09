@@ -3,23 +3,15 @@
 import React, { useState } from 'react';
 import {
   User,
-  Download,
-  Upload,
-  Trash2,
   Shield,
-  Bell,
   Globe,
-  Palette,
   Key,
   Calendar,
   Zap,
   HelpCircle,
   Eye,
-  Cloud,
-  CloudOff,
   Mail,
   CheckCircle,
-  AlertCircle,
   UserX,
 } from 'lucide-react';
 import { useStore } from '@/store';
@@ -29,13 +21,12 @@ import { ConfirmDialog } from '@/components/ui/modal';
 import { CURRENCIES } from '@/lib/constants';
 import { SettingsSection, SettingsItem } from './settings-section';
 import { ThemeSelector, AccentColorSelector } from './theme-selectors';
+import { DataSyncSection } from './data-sync-section';
 import { 
   CurrencySelector, 
   EditProfileModal, 
-  APIKeysModal, 
-  DataExportModal 
+  APIKeysModal,
 } from './settings-modals';
-import { isSyncEnabled, setSyncEnabled, syncData, getLastSyncTime, setLastSyncTime } from '@/lib/sync';
 
 // Main Settings Page
 export const SettingsPage: React.FC = () => {
@@ -45,28 +36,15 @@ export const SettingsPage: React.FC = () => {
 
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showCurrencySelector, setShowCurrencySelector] = useState(false);
-  const [showClearDataConfirm, setShowClearDataConfirm] = useState(false);
   const [showDeleteAccountConfirm, setShowDeleteAccountConfirm] = useState(false);
   const [showAPIKeys, setShowAPIKeys] = useState(false);
-  const [showExportModal, setShowExportModal] = useState(false);
 
   // Preference states
   const [compactMode, setCompactMode] = useState(false);
   const [showAnimations, setShowAnimations] = useState(true);
   const [budgetAlerts, setBudgetAlerts] = useState(true);
   const [weeklyReports, setWeeklyReports] = useState(false);
-  const [cloudSync, setCloudSync] = useState(() => isSyncEnabled());
   const [verificationSent, setVerificationSent] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [lastSync, setLastSync] = useState<Date | null>(() => getLastSyncTime());
-
-  const handleClearData = () => {
-    if (typeof window !== 'undefined') {
-      indexedDB.deleteDatabase('smart_budget_db');
-      localStorage.clear();
-      window.location.reload();
-    }
-  };
 
   const handleDeleteAccount = async () => {
     try {
@@ -91,40 +69,15 @@ export const SettingsPage: React.FC = () => {
     }
   };
 
-  const handleCloudSyncToggle = async (enabled: boolean) => {
-    setCloudSync(enabled);
-    setSyncEnabled(enabled);
-    
-    if (enabled && user?.id) {
-      setIsSyncing(true);
-      try {
-        const result = await syncData(user.id);
-        if (result.success) {
-          setLastSyncTime();
-          setLastSync(new Date());
-        } else {
-          console.error('Sync failed:', result.error);
-          // Revert toggle if sync fails
-          setCloudSync(false);
-          setSyncEnabled(false);
-        }
-      } finally {
-        setIsSyncing(false);
-      }
-    }
-  };
-
   const currentCurrency = CURRENCIES.find((c) => c.code === profile?.currency) || CURRENCIES[0];
 
   return (
     <div className="p-4 lg:p-8 max-w-2xl mx-auto pb-24 lg:pb-8">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-surface-900 dark:text-white">Settings</h1>
         <p className="text-surface-500 mt-1">Manage your account and preferences</p>
       </div>
 
-      {/* Profile Section */}
       <SettingsSection title="Profile">
         <div className="p-5">
           <div className="flex items-center gap-4 mb-5">
@@ -273,7 +226,6 @@ export const SettingsPage: React.FC = () => {
         </div>
       </SettingsSection>
 
-      {/* AI & Integrations */}
       <SettingsSection title="AI & Integrations" description="Configure AI features">
         <SettingsItem
           icon={<Key className="w-5 h-5" />}
@@ -293,51 +245,9 @@ export const SettingsPage: React.FC = () => {
         />
       </SettingsSection>
 
-      {/* Data */}
-      <SettingsSection title="Data" description="Manage your financial data">
-        <SettingsItem
-          icon={cloudSync ? <Cloud className="w-5 h-5" /> : <CloudOff className="w-5 h-5" />}
-          iconColor={cloudSync 
-            ? "bg-accent-100 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400"
-            : "bg-surface-100 dark:bg-surface-900/30 text-surface-600 dark:text-surface-400"
-          }
-          title="Cloud Sync"
-          description={
-            isSyncing 
-              ? "Syncing..." 
-              : lastSync 
-                ? `Last synced: ${lastSync.toLocaleDateString()} ${lastSync.toLocaleTimeString()}`
-                : "Sync data across devices"
-          }
-          badge={cloudSync ? (isSyncing ? "Syncing" : "Enabled") : "Disabled"}
-          badgeVariant={cloudSync ? (isSyncing ? "warning" : "success") : "default"}
-          action={<Switch checked={cloudSync} onChange={handleCloudSyncToggle} disabled={isSyncing} />}
-        />
-        <SettingsItem
-          icon={<Download className="w-5 h-5" />}
-          iconColor="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
-          title="Export Data"
-          description="Download your data as CSV or JSON"
-          onClick={() => setShowExportModal(true)}
-        />
-        <SettingsItem
-          icon={<Upload className="w-5 h-5" />}
-          iconColor="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
-          title="Import Data"
-          description="Restore from a backup file"
-          badge="Coming Soon"
-          badgeVariant="info"
-        />
-        <SettingsItem
-          icon={<Trash2 className="w-5 h-5" />}
-          iconColor="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
-          title="Clear All Data"
-          description="Permanently delete everything"
-          onClick={() => setShowClearDataConfirm(true)}
-        />
-      </SettingsSection>
+      {/* Data & Sync */}
+      <DataSyncSection />
 
-      {/* About */}
       <SettingsSection title="About">
         <SettingsItem
           icon={<Shield className="w-5 h-5" />}
@@ -357,7 +267,6 @@ export const SettingsPage: React.FC = () => {
         </div>
       </SettingsSection>
 
-      {/* Modals */}
       <EditProfileModal
         isOpen={showEditProfile}
         onClose={() => setShowEditProfile(false)}
@@ -373,21 +282,6 @@ export const SettingsPage: React.FC = () => {
       <APIKeysModal
         isOpen={showAPIKeys}
         onClose={() => setShowAPIKeys(false)}
-      />
-
-      <DataExportModal
-        isOpen={showExportModal}
-        onClose={() => setShowExportModal(false)}
-      />
-
-      <ConfirmDialog
-        isOpen={showClearDataConfirm}
-        onClose={() => setShowClearDataConfirm(false)}
-        onConfirm={handleClearData}
-        title="Clear All Data?"
-        description="This will permanently delete all your expenses, budgets, goals, and settings. This action cannot be undone."
-        confirmText="Delete Everything"
-        variant="danger"
       />
 
       <ConfirmDialog
