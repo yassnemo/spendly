@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useStore } from '@/store';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -10,10 +10,14 @@ import { FloatingChat } from '@/components/chat/floating-chat';
 // Inner component that has access to auth context
 function AppInitializer({ children }: { children: React.ReactNode }) {
   const [initError, setInitError] = useState<string | null>(null);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const hasCheckedCloud = useRef(false);
   const initialize = useStore((state) => state.initialize);
+  const syncFromCloud = useStore((state) => state.syncFromCloud);
   const isOnboarded = useStore((state) => state.isOnboarded);
   const isLoading = useStore((state) => state.isLoading);
   const currentUserId = useStore((state) => state.currentUserId);
+  const expenses = useStore((state) => state.expenses);
   const pathname = usePathname();
   const { user, isLoading: authLoading } = useAuth();
 
@@ -28,6 +32,7 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
       
       // Only reinitialize if user changed
       if (userId !== currentUserId) {
+        hasCheckedCloud.current = false; // Reset cloud check for new user
         try {
           await initialize(userId);
         } catch (error) {
@@ -40,10 +45,80 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
     initApp();
   }, [user, authLoading, initialize, currentUserId]);
 
-  if (authLoading || isLoading) {
+  // Auto-restore from cloud for returning users with no local data
+  useEffect(() => {
+    const checkAndRestoreFromCloud = async () => {
+      // Skip if already checked, no user, or still loading
+      if (hasCheckedCloud.current || !user || isLoading || authLoading) return;
+      
+      // Mark as checked to prevent multiple calls
+      hasCheckedCloud.current = true;
+      
+      // If user has no local data (not onboarded), try to restore from cloud
+      if (!isOnboarded && expenses.length === 0) {
+        setIsRestoring(true);
+        try {
+          const result = await syncFromCloud();
+          if (result.success) {
+            console.log('[Providers] Successfully restored data from cloud');
+          }
+        } catch (error) {
+          console.error('[Providers] Failed to restore from cloud:', error);
+          // Don't show error - user can proceed with onboarding if cloud has no data
+        } finally {
+          setIsRestoring(false);
+        }
+      }
+    };
+
+    // Add a small delay to ensure store is fully initialized
+    const timer = setTimeout(checkAndRestoreFromCloud, 100);
+    return () => clearTimeout(timer);
+  }, [user, isLoading, authLoading, isOnboarded, expenses.length, syncFromCloud]);
+
+  // Add a timeout to prevent being stuck on loading forever
+  useEffect(() => {
+    if (isLoading || isRestoring) {
+      const timeout = setTimeout(() => {
+        if (isRestoring) {
+          console.warn('[Providers] Cloud restore timed out');
+          setIsRestoring(false);
+        }
+      }, 10000); // 10 second timeout
+      return () => clearTimeout(timeout);
+    }
+  }, [isLoading, isRestoring]);
+
+  // Show loading only if auth is loading OR (store is loading AND user exists)
+  // Don't block loading for guests
+  const showLoading = authLoading || (isLoading && user) || isRestoring;
+
+  if (showLoading) {
     return (
       <div className="min-h-screen bg-surface-50 dark:bg-surface-950 flex items-center justify-center">
-        <div className="w-10 h-10 rounded-xl bg-primary-500 animate-pulse" />
+        <div className="text-center space-y-4">
+          {/* Logo */}
+          <div className="flex items-center justify-center gap-2">
+            <img 
+              src="/images/logo.svg" 
+              alt="Spendly" 
+              className="w-10 h-10 rounded-xl"
+            />
+            <span className="font-semibold text-xl text-surface-900 dark:text-white tracking-tight">
+              Spendly
+            </span>
+          </div>
+          
+          {/* Simple spinner */}
+          <div className="flex justify-center">
+            <div className="w-6 h-6 border-2 border-surface-200 dark:border-surface-700 border-t-primary-500 rounded-full animate-spin" />
+          </div>
+          
+          {/* Status text */}
+          <p className="text-sm text-surface-500">
+            {isRestoring ? 'Restoring your data...' : 'Loading...'}
+          </p>
+        </div>
       </div>
     );
   }
@@ -92,7 +167,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
   if (!mounted) {
     return (
       <div className="min-h-screen bg-surface-50 dark:bg-surface-950 flex items-center justify-center">
-        <div className="w-10 h-10 rounded-xl bg-primary-500 animate-pulse" />
+        <div className="flex items-center gap-2">
+          <img 
+            src="/images/logo.svg" 
+            alt="Spendly" 
+            className="w-10 h-10 rounded-xl"
+          />
+          <span className="font-semibold text-xl text-surface-900 dark:text-white tracking-tight">
+            Spendly
+          </span>
+        </div>
       </div>
     );
   }
