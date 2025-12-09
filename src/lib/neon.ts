@@ -3,6 +3,7 @@ import { neon, NeonQueryFunction } from '@neondatabase/serverless';
 // Lazy initialization of the database connection
 // This prevents errors when the module is imported in the browser
 let _sql: NeonQueryFunction<false, false> | null = null;
+let _tablesInitialized = false;
 
 function getSql(): NeonQueryFunction<false, false> {
   if (_sql) return _sql;
@@ -19,6 +20,81 @@ function getSql(): NeonQueryFunction<false, false> {
 // Check if database is available (for client-side checks)
 export function isDatabaseAvailable(): boolean {
   return typeof window === 'undefined' && !!process.env.DATABASE_URL;
+}
+
+// Initialize database tables (auto-migration)
+export async function initializeTables(): Promise<void> {
+  if (_tablesInitialized) return;
+  
+  const sql = getSql();
+  
+  // Create tables if they don't exist
+  await sql`
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      email TEXT NOT NULL,
+      display_name TEXT,
+      photo_url TEXT,
+      provider TEXT NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    )
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS expenses (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      amount DECIMAL(10, 2) NOT NULL,
+      category TEXT NOT NULL,
+      description TEXT,
+      date DATE NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    )
+  `;
+
+  await sql`CREATE INDEX IF NOT EXISTS idx_expenses_user_id ON expenses(user_id)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date)`;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS budgets (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      category TEXT NOT NULL,
+      amount DECIMAL(10, 2) NOT NULL,
+      period TEXT NOT NULL DEFAULT 'monthly',
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    )
+  `;
+
+  await sql`CREATE INDEX IF NOT EXISTS idx_budgets_user_id ON budgets(user_id)`;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS goals (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      target_amount DECIMAL(10, 2) NOT NULL,
+      current_amount DECIMAL(10, 2) DEFAULT 0,
+      deadline DATE,
+      color TEXT DEFAULT '#3B82F6',
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    )
+  `;
+
+  await sql`CREATE INDEX IF NOT EXISTS idx_goals_user_id ON goals(user_id)`;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS user_settings (
+      user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+      settings JSONB DEFAULT '{}',
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    )
+  `;
+  
+  _tablesInitialized = true;
 }
 
 // User table operations
@@ -60,6 +136,11 @@ export async function createExpense(expense: {
   await sql`
     INSERT INTO expenses (id, user_id, amount, category, description, date, created_at)
     VALUES (${expense.id}, ${expense.userId}, ${expense.amount}, ${expense.category}, ${expense.description}, ${expense.date}, NOW())
+    ON CONFLICT (id) DO UPDATE SET
+      amount = EXCLUDED.amount,
+      category = EXCLUDED.category,
+      description = EXCLUDED.description,
+      date = EXCLUDED.date
   `;
 }
 
