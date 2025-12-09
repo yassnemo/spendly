@@ -2,12 +2,6 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import {
-  TrendingUp,
-  PiggyBank,
-  Receipt,
-  Target,
-} from 'lucide-react';
 import { useStore } from '@/store';
 import { Card, Skeleton } from '@/components/ui';
 import { formatCurrency, getGreeting, calculatePercentage } from '@/lib/utils';
@@ -15,6 +9,7 @@ import { SpendingChart, CategoryPieChart } from '@/components/charts';
 import { StatsCard, containerVariants, itemVariants } from './stats-card';
 import { HealthScore } from './health-score';
 import { RecentTransactions, BudgetOverview } from './dashboard-widgets';
+import { IncomeIcon, ExpensesIcon, SavingsIcon, BudgetIcon } from '@/components/icons';
 
 // Main Dashboard Component
 export const Dashboard: React.FC = () => {
@@ -71,13 +66,13 @@ export const Dashboard: React.FC = () => {
         <StatsCard
           title="Income"
           value={formatCurrency(monthlyStats?.totalIncome || 0, currency)}
-          icon={TrendingUp}
+          icon={IncomeIcon}
           color="success"
         />
         <StatsCard
           title="Expenses"
           value={formatCurrency(monthlyStats?.totalExpenses || 0, currency)}
-          icon={Receipt}
+          icon={ExpensesIcon}
           color="danger"
         />
         <StatsCard
@@ -85,7 +80,7 @@ export const Dashboard: React.FC = () => {
           value={formatCurrency(Math.abs(monthlyStats?.savings || 0), currency)}
           change={savingsPercent > 0 ? savingsPercent : undefined}
           trend={(monthlyStats?.savings || 0) >= 0 ? 'up' : 'down'}
-          icon={PiggyBank}
+          icon={SavingsIcon}
           color="primary"
         />
         <StatsCard
@@ -94,7 +89,7 @@ export const Dashboard: React.FC = () => {
             monthlyStats?.totalExpenses || 0,
             monthlyStats?.totalIncome || 1
           )}%`}
-          icon={Target}
+          icon={BudgetIcon}
           color="secondary"
         />
       </div>
