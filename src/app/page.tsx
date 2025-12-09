@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store';
+import { useAuth } from '@/components/auth/auth-provider';
 import { OnboardingFlow } from '@/components/onboarding';
 import { LandingPage } from '@/components/landing';
 import { Skeleton } from '@/components/ui';
@@ -11,15 +12,26 @@ export default function HomePage() {
   const router = useRouter();
   const isOnboarded = useStore((state) => state.isOnboarded);
   const isLoading = useStore((state) => state.isLoading);
+  const profile = useStore((state) => state.profile);
+  const { user, isLoading: authLoading } = useAuth();
   const [showOnboarding, setShowOnboarding] = useState(false);
 
+  // Redirect to dashboard if user is onboarded
   useEffect(() => {
-    if (!isLoading && isOnboarded) {
+    if (!isLoading && !authLoading && isOnboarded) {
       router.push('/dashboard');
     }
-  }, [isLoading, isOnboarded, router]);
+  }, [isLoading, authLoading, isOnboarded, router]);
 
-  if (isLoading) {
+  // If user is authenticated but not onboarded, show onboarding
+  useEffect(() => {
+    if (!authLoading && !isLoading && user && !isOnboarded) {
+      setShowOnboarding(true);
+    }
+  }, [user, authLoading, isLoading, isOnboarded]);
+
+  // Show loading while auth or store is loading
+  if (isLoading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-950">
         <div className="space-y-4 text-center">
@@ -30,11 +42,13 @@ export default function HomePage() {
     );
   }
 
-  if (!isOnboarded && !showOnboarding) {
+  // Show landing page for non-authenticated users
+  if (!user && !showOnboarding) {
     return <LandingPage onGetStarted={() => setShowOnboarding(true)} />;
   }
 
-  if (!isOnboarded && showOnboarding) {
+  // Show onboarding for authenticated but not onboarded users
+  if (!isOnboarded) {
     return <OnboardingFlow />;
   }
 

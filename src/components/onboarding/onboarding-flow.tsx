@@ -25,7 +25,10 @@ export const OnboardingFlow: React.FC = () => {
   const setProfile = useStore((state) => state.setProfile);
   const initializeDefaultBudgets = useStore((state) => state.initializeDefaultBudgets);
   const completeOnboarding = useStore((state) => state.completeOnboarding);
-  const { user } = useAuth();
+  const profile = useStore((state) => state.profile);
+  const isOnboarded = useStore((state) => state.isOnboarded);
+  const isLoading = useStore((state) => state.isLoading);
+  const { user, isLoading: authLoading } = useAuth();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [name, setName] = useState('');
@@ -33,41 +36,36 @@ export const OnboardingFlow: React.FC = () => {
   const [currency, setCurrency] = useState('USD');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Check for returning user with existing profile on mount
+  // Handle user authentication and returning user detection
   useEffect(() => {
-    const profile = useStore.getState().profile;
-    if (profile?.onboardingCompleted && profile?.monthlyIncome > 0) {
-      // Returning user with completed profile - skip onboarding
-      completeOnboarding();
-    }
-  }, [completeOnboarding]);
-
-  // If user is already logged in, handle auth step progression
-  useEffect(() => {
+    // Wait for both auth and store to finish loading
+    if (authLoading || isLoading) return;
+    
     if (user) {
       // Set name from user profile
       setName(user.displayName || '');
       
-      // If on auth step, move to next
-      if (currentStep === 2) {
-        // Check if returning user with existing profile
-        const profile = useStore.getState().profile;
-        if (profile?.onboardingCompleted && profile?.monthlyIncome > 0) {
-          // Returning user - complete onboarding immediately
-          completeOnboarding();
-        } else {
-          // Pre-fill from existing profile if available
-          if (profile?.monthlyIncome) {
-            setIncome(profile.monthlyIncome.toString());
-          }
-          if (profile?.currency) {
-            setCurrency(profile.currency);
-          }
-          setCurrentStep(3);
+      // Check if returning user with completed onboarding
+      if (isOnboarded || (profile?.onboardingCompleted && profile?.monthlyIncome > 0)) {
+        // Returning user - complete onboarding immediately
+        completeOnboarding();
+        return;
+      }
+      
+      // User is authenticated but needs to complete onboarding
+      // Skip to income step (step 3) unless already past the auth step
+      if (currentStep <= 2) {
+        // Pre-fill from existing profile if available
+        if (profile?.monthlyIncome) {
+          setIncome(profile.monthlyIncome.toString());
         }
+        if (profile?.currency) {
+          setCurrency(profile.currency);
+        }
+        setCurrentStep(3);
       }
     }
-  }, [user, currentStep, completeOnboarding]);
+  }, [user, authLoading, isLoading, profile, isOnboarded, currentStep, completeOnboarding]);
 
   const handleNext = () => {
     if (currentStep < steps.length) {
@@ -247,6 +245,18 @@ export const OnboardingFlow: React.FC = () => {
         return null;
     }
   };
+
+  // Show loading while auth or store is loading
+  if (authLoading || isLoading) {
+    return (
+      <div className="min-h-screen bg-surface-50 dark:bg-surface-950 flex items-center justify-center p-4">
+        <div className="space-y-4 text-center">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 animate-pulse" />
+          <p className="text-surface-500">Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-950 flex items-center justify-center p-4">

@@ -28,8 +28,10 @@ const firebaseConfig = {
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Providers
+// Providers - force account selection on every sign-in
 const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
+
 const githubProvider = new GithubAuthProvider();
 
 export interface AuthUser {
