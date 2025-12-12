@@ -49,7 +49,7 @@ export default function HomePage() {
 
   // Show onboarding for authenticated but not onboarded users
   if (!isOnboarded) {
-    return <OnboardingFlow />;
+    return <OnboardingFlow onBack={!user ? () => setShowOnboarding(false) : undefined} />;
   }
 
   return null;

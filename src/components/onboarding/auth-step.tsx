@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   User,
   Mail,
@@ -8,9 +9,12 @@ import {
   Chrome,
   Github,
   ArrowLeft,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/auth-provider';
 import { Button, Input } from '@/components/ui';
+import { cn } from '@/lib/utils';
 
 // Auth Step Component
 export const AuthStep: React.FC<{
@@ -21,6 +25,7 @@ export const AuthStep: React.FC<{
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -87,23 +92,32 @@ export const AuthStep: React.FC<{
     }
   };
 
-
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !isLoading) {
+      handleEmailAuth();
+    }
+  };
 
   // Forgot Password Mode
   if (mode === 'forgot') {
     return (
-      <div className="w-full max-w-sm space-y-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        className="w-full max-w-sm space-y-5"
+      >
         <button
           onClick={() => { setMode('login'); setError(''); setSuccessMessage(''); }}
-          className="flex items-center gap-2 text-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300"
+          className="flex items-center gap-2 text-sm text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to sign in
         </button>
 
-        <div className="text-center mb-4">
-          <h3 className="text-lg font-semibold text-surface-900 dark:text-white">Reset Password</h3>
-          <p className="text-sm text-surface-500 mt-1">Enter your email to receive a reset link</p>
+        <div className="space-y-1">
+          <h3 className="text-xl font-semibold text-surface-900 dark:text-white">Reset password</h3>
+          <p className="text-sm text-surface-500">We'll send you a reset link</p>
         </div>
 
         <Input
@@ -113,14 +127,15 @@ export const AuthStep: React.FC<{
           placeholder="Email address"
           leftElement={<Mail className="w-4 h-4 text-surface-400" />}
           disabled={isLoading}
+          onKeyPress={handleKeyPress}
         />
 
         {error && (
-          <p className="text-sm text-danger-500 text-center">{error}</p>
+          <p className="text-sm text-red-500">{error}</p>
         )}
 
         {successMessage && (
-          <p className="text-sm text-green-500 text-center">{successMessage}</p>
+          <p className="text-sm text-blue-500">{successMessage}</p>
         )}
 
         <Button
@@ -128,53 +143,102 @@ export const AuthStep: React.FC<{
           onClick={handleEmailAuth}
           isLoading={isLoading}
         >
-          Send Reset Link
+          Send reset link
         </Button>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="w-full max-w-sm space-y-4">
-      {/* Social Login Buttons */}
-      <div className="space-y-3">
-        <Button
-          variant="secondary"
-          className="w-full"
-          onClick={handleGoogleAuth}
-          disabled={isLoading}
-          leftIcon={<Chrome className="w-5 h-5" />}
-        >
-          Continue with Google
-        </Button>
-        <Button
-          variant="secondary"
-          className="w-full"
-          onClick={handleGithubAuth}
-          disabled={isLoading}
-          leftIcon={<Github className="w-5 h-5" />}
-        >
-          Continue with GitHub
-        </Button>
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className="w-full max-w-sm space-y-5"
+    >
+      {/* Header */}
+      <div className="space-y-1 text-center">
+        <AnimatePresence mode="wait">
+          <motion.h2
+            key={mode}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="text-xl font-semibold text-surface-900 dark:text-white"
+          >
+            {mode === 'login' ? 'Welcome back' : 'Create account'}
+          </motion.h2>
+        </AnimatePresence>
+        <p className="text-sm text-surface-500">
+          {mode === 'login' ? 'Sign in to continue' : 'Get started for free'}
+        </p>
       </div>
 
+      {/* Social Buttons */}
+      <div className="space-y-2">
+        <button
+          onClick={handleGoogleAuth}
+          disabled={isLoading}
+          className={cn(
+            "w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl",
+            "border border-surface-200 dark:border-surface-700",
+            "bg-white dark:bg-surface-800",
+            "hover:bg-surface-50 dark:hover:bg-surface-750",
+            "text-surface-900 dark:text-white text-sm font-medium",
+            "transition-colors duration-150",
+            "disabled:opacity-50 disabled:cursor-not-allowed"
+          )}
+        >
+          <Chrome className="w-4 h-4" />
+          Continue with Google
+        </button>
+        <button
+          onClick={handleGithubAuth}
+          disabled={isLoading}
+          className={cn(
+            "w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl",
+            "border border-surface-200 dark:border-surface-700",
+            "bg-white dark:bg-surface-800",
+            "hover:bg-surface-50 dark:hover:bg-surface-750",
+            "text-surface-900 dark:text-white text-sm font-medium",
+            "transition-colors duration-150",
+            "disabled:opacity-50 disabled:cursor-not-allowed"
+          )}
+        >
+          <Github className="w-4 h-4" />
+          Continue with GitHub
+        </button>
+      </div>
+
+      {/* Divider */}
       <div className="flex items-center gap-4">
         <div className="flex-1 h-px bg-surface-200 dark:bg-surface-700" />
         <span className="text-xs text-surface-400">or</span>
         <div className="flex-1 h-px bg-surface-200 dark:bg-surface-700" />
       </div>
 
-      {/* Email/Password Form */}
-      <div className="space-y-3">
-        {mode === 'signup' && (
-          <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Your name"
-            leftElement={<User className="w-4 h-4 text-surface-400" />}
-            disabled={isLoading}
-          />
-        )}
+      {/* Form */}
+      <div className="space-y-3" onKeyPress={handleKeyPress}>
+        <AnimatePresence mode="wait">
+          {mode === 'signup' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+                leftElement={<User className="w-4 h-4 text-surface-400" />}
+                disabled={isLoading}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <Input
           type="email"
           value={email}
@@ -183,28 +247,40 @@ export const AuthStep: React.FC<{
           leftElement={<Mail className="w-4 h-4 text-surface-400" />}
           disabled={isLoading}
         />
+
         <Input
-          type="password"
+          type={showPassword ? 'text' : 'password'}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
           leftElement={<Lock className="w-4 h-4 text-surface-400" />}
           disabled={isLoading}
+          rightElement={
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors"
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          }
         />
       </div>
 
       {mode === 'login' && (
-        <button
-          onClick={() => { setMode('forgot'); setError(''); }}
-          className="text-sm text-primary-500 hover:underline"
-          disabled={isLoading}
-        >
-          Forgot password?
-        </button>
+        <div className="text-right">
+          <button
+            onClick={() => { setMode('forgot'); setError(''); }}
+            className="text-sm text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            disabled={isLoading}
+          >
+            Forgot password?
+          </button>
+        </div>
       )}
 
       {error && (
-        <p className="text-sm text-danger-500 text-center">{error}</p>
+        <p className="text-sm text-red-500">{error}</p>
       )}
 
       <Button
@@ -212,19 +288,22 @@ export const AuthStep: React.FC<{
         onClick={handleEmailAuth}
         isLoading={isLoading}
       >
-        {mode === 'login' ? 'Sign In' : 'Create Account'}
+        {mode === 'login' ? 'Sign in' : 'Create account'}
       </Button>
 
       <p className="text-center text-sm text-surface-500">
         {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
         <button
-          onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-          className="text-primary-500 font-medium hover:underline"
+          onClick={() => {
+            setMode(mode === 'login' ? 'signup' : 'login');
+            setError('');
+          }}
+          className="text-blue-500 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           disabled={isLoading}
         >
-          {mode === 'login' ? 'Sign Up' : 'Sign In'}
+          {mode === 'login' ? 'Sign up' : 'Sign in'}
         </button>
       </p>
-    </div>
+    </motion.div>
   );
 };

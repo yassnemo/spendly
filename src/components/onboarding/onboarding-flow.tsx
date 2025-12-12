@@ -11,6 +11,7 @@ import {
   DollarSign,
   Target,
   Sparkles,
+  X,
 } from 'lucide-react';
 import { useStore } from '@/store';
 import { useAuth } from '@/components/auth/auth-provider';
@@ -20,8 +21,12 @@ import { cn } from '@/lib/utils';
 import { steps, StepIndicator, StepContent, FeatureCard } from './onboarding-steps';
 import { AuthStep } from './auth-step';
 
+interface OnboardingFlowProps {
+  onBack?: () => void;
+}
+
 // Main Onboarding Component
-export const OnboardingFlow: React.FC = () => {
+export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onBack }) => {
   const setProfile = useStore((state) => state.setProfile);
   const initializeDefaultBudgets = useStore((state) => state.initializeDefaultBudgets);
   const completeOnboarding = useStore((state) => state.completeOnboarding);
@@ -261,7 +266,17 @@ export const OnboardingFlow: React.FC = () => {
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-950 flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
-        <Card className="p-8">
+        <Card className="p-8 relative">
+          {/* Back to landing page button */}
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="absolute top-4 right-4 p-2 rounded-lg text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+              aria-label="Back to home"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
           <StepIndicator currentStep={currentStep} totalSteps={steps.length} />
 
           <AnimatePresence mode="wait">{renderStepContent()}</AnimatePresence>
